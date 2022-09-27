@@ -7,12 +7,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 class video_data(Model):
-    # id = models.BigAutoField(help_text="Video ID", verbose_name="VIDEO ID", primary_key=True)
+    #id = models.BigAutoField(help_text="Video ID", verbose_name="VIDEO ID", primary_key=True)
     src_path = models.FilePathField(max_length=200, path=BASE_DIR, verbose_name="SOURCE PATH", null=True)
     name = models.CharField(max_length=100, verbose_name="NAME")
     
-    fps = models.PositiveSmallIntegerField(verbose_name="FPS", null=True)
-    last_frame = models.PositiveSmallIntegerField(verbose_name="Last Frame", null=True)
+    fps = models.FloatField(verbose_name="FPS", null=True)
+    last_frame = models.FloatField(verbose_name="Last Frame", null=True)
     # crop_imgs_dir_path = models.FilePathField(max_length=100)
 
 class labels_mainclass_type(Model):
@@ -63,7 +63,7 @@ class bbox_data(Model):
         ]    
 
 class bbox_attributes(Model):
-    bbox_id = models.ForeignKey(to="bbox_data", on_delete=CASCADE, verbose_name="BBOX ID")
+    bbox = models.ForeignKey(to="bbox_data", on_delete=CASCADE, verbose_name="BBOX ID")
     attributes = models.ForeignKey(to="labels_attributes", on_delete=CASCADE, verbose_name="Attributes")
     
     class Meta:
