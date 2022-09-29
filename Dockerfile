@@ -1,6 +1,4 @@
-FROM nvcr.io/nvidia/tensorrt:22.05-py3
-#FROM python:3.8.2
-ENV PYTHONBUFFERED 1
+FROM ubuntu:latest
 
 SHELL ["/bin/bash", "-c"]
 
@@ -18,15 +16,19 @@ RUN echo ${usr}:${usr}1 | chpasswd
 ENV DEBIAN_FRONTEND=noninteractive
 
 # install
-RUN apt-get update && apt-get install -y sudo && \
-    apt-get install -y libgl1-mesa-glx git locales && \
-    locale-gen ko_KR.UTF-8
+RUN apt-get update && apt-get install -y sudo \
+    && apt-get install -y libgl1-mesa-glx git locales \
+    && apt-get install -y locales curl python3. 8 - distutils \
+    && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+    && python3 get-pip.py \
+    && pip install -U pip \
+    && mkdir /code \
+    && rm -rf /var/lib/apt/lists/* \
+    && locale-gen ko_KR.UTF-8
 # RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 
-# container에 git 설치 & 프로젝트 필요 소스 다운로드
-RUN apt-get -qq install curl --yes
-RUN apt-get install git --yes
 
+# 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
 
 RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
@@ -39,4 +41,3 @@ RUN pip install -r requirements.txt
 
 USER ${usr}
 RUN ["/bin/bash"]
-
