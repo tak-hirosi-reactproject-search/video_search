@@ -30,7 +30,7 @@ RUN apt-get install git --yes
 
 RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
 WORKDIR /react-django/video_search
-COPY /home/react-django/video_search /react-django/video_search
+COPY . .
 RUN echo =================`pwd -P`===============
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
