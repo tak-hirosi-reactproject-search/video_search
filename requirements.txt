@@ -7,3 +7,4 @@ djangorestframework>=3.12.2
 django-filter>=22.1
 markdown>=3.4.1
 django-cors-headers==3.13.0
+pandas
