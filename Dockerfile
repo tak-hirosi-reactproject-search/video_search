@@ -35,5 +35,5 @@ RUN pip install -r requirements.txt
 EXPOSE 8000
 
 USER ${usr}
-RUN echo $PATH
-RUN ["python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+RUN echo ==============$PATH======================
+RUN ["/bin/bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
