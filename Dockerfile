@@ -1,5 +1,5 @@
-#FROM nvcr.io/nvidia/tensorrt:22.05-py3
-FROM python:3.8.2
+FROM nvcr.io/nvidia/tensorrt:22.05-py3
+#FROM python:3.8.2
 ENV PYTHONBUFFERED 1
 
 SHELL ["/bin/bash", "-c"]
