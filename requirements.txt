@@ -1,0 +1,9 @@
+# pip install -r requirements.txt
+
+
+# django --------------------------------
+django>=4.1
+djangorestframework>=3.13.1
+django-filter>=22.1
+markdown>=3.4.1
+django-cros-headers>=3.13.0
