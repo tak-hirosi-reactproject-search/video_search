@@ -20,5 +20,5 @@ rm:
 	@echo 'rm docker $(APP_NAME)'
 	docker rm -f $(APP_NAME)
 rmi:
-	@echo 'rmi docker $(APP_NAME)'
-	docker rmi $(APP_NAME)
+	@echo 'rmi docker $(IMAGE_NAME)'
+	docker rmi $(IMAGE_NAME)
