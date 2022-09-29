@@ -36,6 +36,5 @@ EXPOSE 8000
 
 USER ${usr}
 WORKDIR .
-ARG SHELL_PATH=`pwd -P`
-RUN echo =================$SHELL_PATH===============
+RUN echo =================$`pwd -P`===============
 RUN ["python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
