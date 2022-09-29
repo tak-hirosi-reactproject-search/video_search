@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y sudo && \
 
 # container에 git 설치 & 프로젝트 필요 소스 다운로드
 RUN apt-get -qq install curl --yes
-RUN apt-get install git -yes
+RUN apt-get install git --yes
 
 COPY . .
 RUN pip install -r requirements.txt
