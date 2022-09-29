@@ -37,5 +37,5 @@ RUN pip install -r requirements.txt
 EXPOSE 8000
 
 USER ${usr}
+RUN ["/bin/bash"]
 
-CMD ["python",  "manage.py", "migrate"]
