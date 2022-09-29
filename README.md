@@ -14,5 +14,5 @@ docker image build -t <image name> .
 
 # how to run
 ```bash
-docker run -d --name <container name> -p 8000:8000 <image name>
+docker run
 ```
