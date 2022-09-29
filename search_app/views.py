@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db import connection
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -6,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer
 import os
+import json
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
 import pandas as pd
 
@@ -94,7 +96,6 @@ def set_video_data(filepath):
     video_id = list(video_data.objects.all().values('id'))[0]["id"]
     video_obj = video_data.objects.get(id = video_id)
 
-    print(video_id)
     return video_obj
 
 def call_serializer(filepath):
@@ -104,10 +105,77 @@ def call_serializer(filepath):
 
     return HttpResponse('<h1> Serialized </h1>')
 
-# def search(request):
-#     # if request.method == 'POST':
-#     #     searched = request.POST['searched']
-#     return 0
+def search(request):
+    attr = '/workspace/test_jhlee/search_module/test.json'
+    condition = "intersect"
+    
+    with open(attr, 'r') as file:
+        data = json.load(file)
+        
+    video_id_list = data["video_id"]
+    top_type_list = data["top_type"]
+    top_color_list = data["top_color"]
+    bottom_type_list = data["bottom_type"]
+    bottom_color_list = data["bottom_color"]
+    
+    string_query_toptype = []
+    string_query_topcolor = []
+    string_query_bottomtype = []
+    string_query_bottomcolor = []
+
+    for i in range(len(video_id_list)):
+        for j in range(len(top_type_list)):
+            string_query_toptype.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            +" where search_app_labels_attributes.value=" 
+            + "'" + top_type_list[j] + "'"
+            +" and search_app_video_data.id=" 
+            +str(video_id_list[i])
+            )
+        
+        for k in range(len(top_color_list)):
+            string_query_topcolor.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            +"where search_app_labels_attributes.value=" 
+            + "'" + top_color_list[k] + "'"
+            +" and search_app_labels_attributes.type_id=" 
+            +"2" 
+            +" and search_app_video_data.id=" 
+            +str(video_id_list[i])
+            )
+        
+        for l in range(len(bottom_type_list)):
+            string_query_bottomtype.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            +"where search_app_labels_attributes.value=" 
+            + "'" + bottom_type_list[l] + "'"
+            +" and search_app_video_data.id=" 
+            +str(video_id_list[i])
+            )
+        
+        for m in range(len(bottom_color_list)):
+            string_query_bottomcolor.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            +"where search_app_labels_attributes.value=" 
+            + "'" + bottom_color_list[m] + "'"
+            +" and search_app_labels_attributes.type_id=" 
+            +"4" 
+            +" and search_app_video_data.id=" 
+            +str(video_id_list[i])
+            )
+    
+    q1 = ' union '.join(string_query_toptype)
+    q2 = ' union '.join(string_query_topcolor)
+    q3 = ' union '.join(string_query_bottomtype)
+    q4 = ' union '.join(string_query_bottomcolor)
+    
+    raw_query = q1 + ' intersect ' + q2  + ' ' + condition + ' ' + q3 + ' intersect ' + q4 + ";"
+      
+    with connection.cursor() as cursor:
+        cursor.execute(raw_query)
+        row = cursor.fetchall()
+    
+    print(row)
+    
+    
+    return HttpResponse('<h1> searching </h1>')
+
 
 # Blog의 목록, detail 보여주기, 수정하기, 삭제하기 모두 가능
 class VideodataViewSet(viewsets.ModelViewSet):
