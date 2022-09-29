@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer
+from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
 import os
 import json
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
@@ -105,9 +105,15 @@ def call_serializer(filepath):
 
     return HttpResponse('<h1> Serialized </h1>')
 
-def search(request):
+def call_serializer(filepath):
+    filepath = '/workspace/test_jhlee/search_module/test.csv'
+    video_id = set_video_data(filepath)
+    set_bbox(filepath, video_id)
+
+    return HttpResponse('<h1> Serialized </h1>')
+
+def search(condition):
     attr = '/workspace/test_jhlee/search_module/test.json'
-    condition = "intersect"
     
     with open(attr, 'r') as file:
         data = json.load(file)
@@ -170,11 +176,20 @@ def search(request):
     with connection.cursor() as cursor:
         cursor.execute(raw_query)
         row = cursor.fetchall()
+
+    result_set = []
+    for i in range(len(row)):
+        temp_dict = {}
+        temp_dict["bbox_id"] = row[i][0]
+        temp_dict["crop_img_path"] = row[i][1]
+        temp_dict["frame_num"] = row[i][2]
+        temp_dict["obj_id"] = row[i][3]
+        result_set.append(temp_dict)
+
+    search_serializer = SearchSerializer(result_set, many = True)
     
-    print(row)
+    return search_serializer.data
     
-    
-    return HttpResponse('<h1> searching </h1>')
 
 
 # Blog의 목록, detail 보여주기, 수정하기, 삭제하기 모두 가능
@@ -202,3 +217,9 @@ class LabelTypeViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
     queryset = labels_attributes_type.objects.all()
     serializer_class = LabelsTypeSerializer
+
+class search_serializerViewSet(viewsets.ModelViewSet):
+    condition = "union"
+    lookup_field = 'crop_img_path'
+    queryset = search(condition)
+    serializer_class = SearchSerializer

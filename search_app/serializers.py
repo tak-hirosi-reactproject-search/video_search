@@ -31,3 +31,9 @@ class LabelsMainClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = labels_mainclass_type
         fields = '__all__'
+    
+class SearchSerializer(serializers.Serializer):
+    bbox_id = serializers.IntegerField()
+    crop_img_path = serializers.CharField()
+    frame_num = serializers.IntegerField()
+    obj_id = serializers.IntegerField()
