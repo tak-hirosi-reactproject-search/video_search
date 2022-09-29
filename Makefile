@@ -6,7 +6,7 @@ MODEL_VOLUME = /home/${USR}/react-django/$(APP_NAME):/react-django/$(APP_NAME)
 # Build and run the container
 build:
 	@echo 'build docker $(APP_NAME)'
-  docker image build --build-arg uid=$(UID) usr=$(USR) -t $(APP_NAME) .
+  	docker image build --build-arg uid=$(UID) usr=$(USR) -t $(APP_NAME) .
 
 run:
 	@echo 'run docker $(APP_NAME)'
