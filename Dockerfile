@@ -6,9 +6,9 @@ SHELL ["/bin/bash", "-c"]
 
 # Setup user account
 # id -g, id -u
-ARG uid=1014
-ARG gid=1014
-ARG usr=tglee
+ARG uid
+ARG gid=uid
+ARG usr
 RUN groupadd -r -f -g ${gid} ${usr} && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash ${usr}
 RUN usermod -aG sudo ${usr}
 RUN echo ${usr}:${usr}1 | chpasswd
@@ -16,7 +16,6 @@ RUN echo ${usr}:${usr}1 | chpasswd
 
 # Required to build Ubuntu 20.04 without user prompts with DLFW container
 ENV DEBIAN_FRONTEND=noninteractive
-ENV LC_ALL ko_KR.UTF-8
 
 # install
 RUN apt-get update && apt-get install -y sudo && \
@@ -27,6 +26,8 @@ RUN apt-get update && apt-get install -y sudo && \
 # container에 git 설치 & 프로젝트 필요 소스 다운로드
 RUN apt-get -qq install curl --yes
 RUN apt-get install git --yes
+
+ENV LC_ALL ko_KR.UTF-8
 
 RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
 WORKDIR /react-django/video_search
