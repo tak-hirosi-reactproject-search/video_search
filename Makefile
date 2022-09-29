@@ -6,7 +6,8 @@ MODEL_VOLUME = /home/${USR}/react-django/$(APP_NAME):/react-django/$(APP_NAME)
 # Build and run the container
 run:
 	@echo 'run docker $(APP_NAME)'
-	docker run -d -t --name="$(APP_NAME)" --net=host --ipc=host --shm-size 32gb -v $(MODEL_VOLUME) $(IMAGE_NAME)
+	#docker run -d -t --name="$(APP_NAME)" --net=host --ipc=host --shm-size 32gb -v $(MODEL_VOLUME) $(IMAGE_NAME)
+	docker run -ti --name="$(APP_NAME)" --shm-size 32gb -v $(MODEL_VOLUME) $(IMAGE_NAME)
 stop:
 	@echo 'stop docker $(APP_NAME)'
 	docker stop $(APP_NAME)
