@@ -9,10 +9,11 @@ docker를 실행할 수 있는 환경
 ```bash
 git clone https://github.com/tak-hirosi-reactproject-search/video_search.git
 cd video_search
-make run UID=<uid> USR=<user id> APP_NAME=video_search
+make build UID=<uid> USR=<user id> APP_NAME=video_search
 ```
 
 # how to run
 ```bash
-docker run <image name>
+git pull
+make run APP_NAME=video_search
 ```
