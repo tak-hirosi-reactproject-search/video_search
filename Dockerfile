@@ -1,4 +1,4 @@
-FROM ubuntu:latest-alpine
+FROM ubuntu:latest - alpine
 
 SHELL ["/bin/bash", "-c"]
 
