@@ -1,9 +1,13 @@
+UID=1014
 USR=tglee
 APP_NAME=video_search
 IMAGE_NAME=video_search_tg
 MODEL_VOLUME = /home/${USR}/react-django/$(APP_NAME):/react-django/$(APP_NAME)
  
 # Build and run the container
+build:
+	@echo 'build docker $(APP_NAME)'
+  	docker image build --build-arg uid=$(UID) usr=$(USR) -t $(APP_NAME) .
 run:
 	@echo 'run docker $(APP_NAME)'
 	#docker run -d -t --name="$(APP_NAME)" --net=host --ipc=host --shm-size 32gb -v $(MODEL_VOLUME) $(IMAGE_NAME)
