@@ -28,13 +28,15 @@ RUN apt-get update && apt-get install -y sudo && \
 RUN apt-get -qq install curl --yes
 RUN apt-get install git --yes
 
-COPY . .
+RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
+WORKDIR /react-django/video_search
+COPY ./react-django/video_search /react-django/video_search
+RUN echo =================`pwd -P`===============
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 EXPOSE 8000
 
 USER ${usr}
-WORKDIR .
-RUN echo =================$`pwd -P`===============
+
 RUN ["python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
