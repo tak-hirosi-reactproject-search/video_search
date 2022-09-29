@@ -1,6 +1,6 @@
-UID
-USR
-APP_NAME
+UID=$(uid)
+USR=$(usr)
+APP_NAME=$(app_name)
 MODEL_VOLUME = /home/${USR}/react-django/$(APP_NAME):/react-django/$(APP_NAME)
  
 # Build and run the container
