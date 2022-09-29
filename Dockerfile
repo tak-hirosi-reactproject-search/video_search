@@ -6,9 +6,9 @@ SHELL ["/bin/bash", "-c"]
 
 # Setup user account
 # id -g, id -u
-ARG uid
+ARG uid=1014
 ARG gid=uid
-ARG usr
+ARG usr=tglee
 RUN groupadd -r -f -g ${gid} ${usr} && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash ${usr}
 RUN usermod -aG sudo ${usr}
 RUN echo ${usr}:${usr}1 | chpasswd
