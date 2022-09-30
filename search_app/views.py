@@ -1,6 +1,7 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import connection
 from django.shortcuts import render
+from django.views import View
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -112,18 +113,15 @@ def call_serializer(filepath):
 
     return HttpResponse('<h1> Serialized </h1>')
 
-def search(condition):
-    attr = '/workspace/test_jhlee/search_module/test.json'
-    
-    with open(attr, 'r') as file:
-        data = json.load(file)
+def search(data):
         
     video_id_list = data["video_id"]
     top_type_list = data["top_type"]
     top_color_list = data["top_color"]
     bottom_type_list = data["bottom_type"]
     bottom_color_list = data["bottom_color"]
-    
+    condition = data["condition"][0]
+
     string_query_toptype = []
     string_query_topcolor = []
     string_query_bottomtype = []
@@ -185,10 +183,8 @@ def search(condition):
         temp_dict["frame_num"] = row[i][2]
         temp_dict["obj_id"] = row[i][3]
         result_set.append(temp_dict)
-
-    search_serializer = SearchSerializer(result_set, many = True)
-    
-    return search_serializer.data
+  
+    return result_set
     
 
 
@@ -218,8 +214,14 @@ class LabelTypeViewSet(viewsets.ModelViewSet):
     queryset = labels_attributes_type.objects.all()
     serializer_class = LabelsTypeSerializer
 
-class search_serializerViewSet(viewsets.ModelViewSet):
-    condition = "union"
-    lookup_field = 'crop_img_path'
-    queryset = search(condition)
-    serializer_class = SearchSerializer
+class SearchViewSet(viewsets.ModelViewSet):
+    def list(self, request, json_file):    
+        basic_folder = '/workspace/test_jhlee/search_module/' #수정중
+        json_file = basic_folder + json_file + '.json'        #수정중
+
+        with open(json_file, 'r') as file:
+            data = json.load(file)
+            result_set = search(data)
+            search_serializer = SearchSerializer(result_set, many = True)
+        
+        return HttpResponse(search_serializer.data)

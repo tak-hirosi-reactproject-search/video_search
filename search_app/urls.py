@@ -1,5 +1,5 @@
-from django.urls import path
-from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, call_serializer, search, search_serializerViewSet
+from django.urls import path, re_path
+from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, call_serializer, SearchViewSet
 
 # Blog 목록 보여주기
 video_list = VideodataViewSet.as_view({
@@ -25,7 +25,7 @@ label_type_list = LabelTypeViewSet.as_view({
     'get' : 'list'
 })
 
-searched_list = search_serializerViewSet.as_view({
+searched_list = SearchViewSet.as_view({
     'get' : 'list'
 })
 
@@ -35,7 +35,8 @@ urlpatterns = [
     path("bbox_attr/", bbox_attr_list),
     path("label_attr/", label_attr_list),
     path("label_type/", label_type_list),
-    path("search/", searched_list),
+    #path("search/", searched_list),
+    
+    re_path(r'^(?P<json_file>[\w]+).json$', searched_list),
     path("serialize/", call_serializer),
-    # path("", search, name = search)
 ]
