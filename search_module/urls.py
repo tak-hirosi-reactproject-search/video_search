@@ -23,6 +23,6 @@ urlpatterns = [
     path('', include('search_app.urls'))
 ]
 
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-# ]
+
+
+

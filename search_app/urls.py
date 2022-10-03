@@ -1,5 +1,7 @@
 from django.urls import path, re_path
 from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, call_serializer, SearchViewSet
+from urllib import parse
+import json
 
 # Blog 목록 보여주기
 video_list = VideodataViewSet.as_view({
@@ -29,14 +31,19 @@ searched_list = SearchViewSet.as_view({
     'get' : 'list'
 })
 
+with open('/workspace/test_jhlee/search_module/test.json', 'r', encoding='utf-8') as file:
+    data = json.load(file)
+
+#url 형식
+url = parse.urlencode(data, doseq=True)
+print(url)
+
 urlpatterns = [
     path("video/", video_list),
     path("bbox/", bbox_data_list),
     path("bbox_attr/", bbox_attr_list),
     path("label_attr/", label_attr_list),
     path("label_type/", label_type_list),
-    #path("search/", searched_list),
-    
-    re_path(r'^(?P<json_file>[\w]+).json$', searched_list),
+    path("search/<str:url>/", searched_list),
     path("serialize/", call_serializer),
 ]

@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
 import os
 import json
+import urllib.parse as uparse
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
 import pandas as pd
 
@@ -20,13 +21,7 @@ def set_bbox(filepath, video_id):
     label_mainclass_obj = labels_mainclass_type.objects.get(id = label_mainclass_id)
 
     for i in range(len(data_df)):    
-        filename = data_df[i][0].split('/')
-        video_name_jpg = filename[1].split("_")
-        video_name = video_name_jpg[2].split(".")
-        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = filename[1], mainclass = label_mainclass_obj)
-        bbox.save()
-        bbox_instance_id = list(bbox_data.objects.filter(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0]).values('id'))[0]["id"]
-        bbox_instance_obj = bbox_data.objects.get(id = bbox_instance_id)
+
         label_list = []
 
         for j in range(len(data_df[0])):
@@ -74,12 +69,24 @@ def set_bbox(filepath, video_id):
                 elif j == 4:
                     type_str = 'bottom_color'
                 
+                if type_index == -1:
+                    break
+                
                 if type_index in range(0, 11):
                     label_attribute_type_id = list(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))[0]["id"]
                     label_attribute_type_obj = labels_attributes_type.objects.get(id = label_attribute_type_id)
                     label_attribute_id = list(labels_attributes.objects.filter(type = label_attribute_type_obj, index = type_index).values('id'))[0]["id"]
                     label_attribute_obj = labels_attributes.objects.get(id = label_attribute_id)
                     label_list.append(label_attribute_obj)
+        
+        
+        filename = data_df[i][0].split('/')
+        video_name_jpg = filename[1].split("_")
+        video_name = video_name_jpg[2].split(".") 
+        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = filename[1], mainclass = label_mainclass_obj)
+        bbox.save()
+        bbox_instance_id = list(bbox_data.objects.filter(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0]).values('id'))[0]["id"]
+        bbox_instance_obj = bbox_data.objects.get(id = bbox_instance_id)
 
         for k in range(len(label_list)):
             bbox_attribute_instance = bbox_attributes(bbox = bbox_instance_obj, attributes = label_list[k])
@@ -106,22 +113,10 @@ def call_serializer(filepath):
 
     return HttpResponse('<h1> Serialized </h1>')
 
-def call_serializer(filepath):
-    filepath = '/workspace/test_jhlee/search_module/test.csv'
-    video_id = set_video_data(filepath)
-    set_bbox(filepath, video_id)
 
-    return HttpResponse('<h1> Serialized </h1>')
-
-def search(data):
+def search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, con):
         
-    video_id_list = data["video_id"]
-    top_type_list = data["top_type"]
-    top_color_list = data["top_color"]
-    bottom_type_list = data["bottom_type"]
-    bottom_color_list = data["bottom_color"]
-    condition = data["condition"][0]
-
+    condition = con[0]
     string_query_toptype = []
     string_query_topcolor = []
     string_query_bottomtype = []
@@ -183,10 +178,36 @@ def search(data):
         temp_dict["frame_num"] = row[i][2]
         temp_dict["obj_id"] = row[i][3]
         result_set.append(temp_dict)
-  
+        
     return result_set
-    
 
+def get_data(data):
+    video_id_list = []
+    top_type_list = []
+    top_color_list = []
+    bottom_type_list = []
+    bottom_color_list = []
+    condition = []
+
+    for i in range(len(data)):
+        if data[i][0] == 'video_id':
+            video_id_list.append(data[i][1])
+        elif data[i][0] == "top_type":
+            top_type_list.append(data[i][1])
+        elif data[i][0] == "top_color":
+            top_color_list.append(data[i][1])
+        elif data[i][0] == "bottom_type":
+            bottom_type_list.append(data[i][1])
+        elif data[i][0] == "bottom_color":
+            bottom_color_list.append(data[i][1])
+        elif data[i][0] == "condition":
+            condition.append(data[i][1])
+        
+    result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
+    search_serializer = SearchSerializer(result_set, many = True)
+
+    return search_serializer.data
+   
 
 # Blog의 목록, detail 보여주기, 수정하기, 삭제하기 모두 가능
 class VideodataViewSet(viewsets.ModelViewSet):
@@ -215,13 +236,11 @@ class LabelTypeViewSet(viewsets.ModelViewSet):
     serializer_class = LabelsTypeSerializer
 
 class SearchViewSet(viewsets.ModelViewSet):
-    def list(self, request, json_file):    
-        basic_folder = '/workspace/test_jhlee/search_module/' #수정중
-        json_file = basic_folder + json_file + '.json'        #수정중
+    queryset = bbox_data.objects.all()
 
-        with open(json_file, 'r') as file:
-            data = json.load(file)
-            result_set = search(data)
-            search_serializer = SearchSerializer(result_set, many = True)
-        
-        return HttpResponse(search_serializer.data)
+    def list(self, request, url):
+        data = uparse.parse_qsl(url, keep_blank_values=True)
+        queryset = get_data(data)
+        return Response(queryset)
+
+
