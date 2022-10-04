@@ -6,12 +6,12 @@ using (react - django RESTapi ) study project!
 docker를 실행할 수 있는 환경
 
 # Please Set Makefile
-'''Makefile
+```Makefile
 UID=1014 # change
 USR=tglee # change
 APP_NAME=video_search # change
 IMAGE_NAME=video_search_image # change
-'''
+```
 
 # how to install
 ```bash
