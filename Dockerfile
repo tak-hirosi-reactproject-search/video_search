@@ -21,17 +21,27 @@ RUN apt-get update && apt-get install -y sudo \
     && locale-gen ko_KR.UTF-8
 # RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 
+# react download
+RUN sudo apt install npm
+RUN mkdir -p /react-django/react_search_project && chown ${usr} /react-django/react_search_project
+WORKDIR /react-django/react_search_project
+COPY . .
+WORKDIR /react-django/react_search_project/app
+RUN npm install --silent
+
+
+
 
 # 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
-RUN pip install --upgrade pip
-RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
-WORKDIR /react-django/video_search
-COPY . .
-# RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN pip install -r requirements.txt
+# RUN pip install --upgrade pip
+# RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
+# WORKDIR /react-django/video_search
+# COPY . .
+# # RUN /usr/local/bin/python -m pip install --upgrade pip
+# RUN pip install -r requirements.txt
 
-# EXPOSE 8000
+# # EXPOSE 8000
 
 USER ${usr}
 RUN ["/bin/bash"]
