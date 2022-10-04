@@ -10,7 +10,6 @@ ARG usr
 RUN groupadd -r -f -g ${gid} ${usr} && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash ${usr}
 RUN usermod -aG sudo ${usr}
 RUN echo ${usr}:${usr}1 | chpasswd
-# RUN mkdir -p /django-react-project && chown ${usr} /django-react-project
 
 # Required to build Ubuntu 20.04 without user prompts with DLFW container
 ENV DEBIAN_FRONTEND=noninteractive
@@ -24,8 +23,8 @@ RUN apt-get update && apt-get install -y sudo \
 # 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
 RUN pip install --upgrade pip
-RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
-WORKDIR /react-django/video_search
+RUN mkdir -p /video_search && chown ${usr} /video_search
+WORKDIR /video_search
 COPY . .
 # RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
