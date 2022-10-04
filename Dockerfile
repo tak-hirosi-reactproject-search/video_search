@@ -23,23 +23,12 @@ RUN apt-get update && apt-get install -y sudo \
 
 # 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
-# RUN pip install --upgrade pip
-# RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
-# WORKDIR /react-django/video_search
-# COPY . .
-# # RUN /usr/local/bin/python -m pip install --upgrade pip
-# RUN pip install -r requirements.txt
-
-
-# react download
-RUN sudo apt install npm --yes
-RUN mkdir -p /react-django/react_search_project && chown ${usr} /react-django/react_search_project
-WORKDIR /react-django/react_search_project
-COPY ./home/${usr}/react-django/react_search_project ./react-django/react_search_project
-WORKDIR ./react-django/react_search_project/app
-RUN npm install --silent
-
-
+RUN pip install --upgrade pip
+RUN mkdir -p /react-django/video_search && chown ${usr} /react-django/video_search
+WORKDIR /react-django/video_search
+COPY . .
+# RUN /usr/local/bin/python -m pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 
 
