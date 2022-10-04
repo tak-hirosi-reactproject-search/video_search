@@ -6,7 +6,7 @@ using (react - django RESTapi ) study project!
 docker를 실행할 수 있는 환경
 
 
-# how to install
+# how to install (source & docker container)
 ```bash
 git clone https://github.com/tak-hirosi-reactproject-search/video_search.git
 cd video_search
@@ -21,8 +21,9 @@ APP_NAME=video_search # change
 IMAGE_NAME=video_search_image # change
 ```
 
-# how to run
+# how to docker run
 ```bash
 git pull
 make run
 ```
+
