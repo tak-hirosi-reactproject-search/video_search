@@ -27,3 +27,7 @@ git pull
 make run
 ```
 
+# how to server run
+```bash
+python manage.py runserver
+```
