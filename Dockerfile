@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y sudo \
 # RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 
 # react download
-RUN sudo apt install npm
+RUN sudo apt install npm --yes
 RUN mkdir -p /react-django/react_search_project && chown ${usr} /react-django/react_search_project
 WORKDIR /react-django/react_search_project
 COPY . .
