@@ -15,5 +15,5 @@ make build
 # how to run
 ```bash
 git pull
-make run APP_NAME=video_search
+make run
 ```
