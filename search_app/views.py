@@ -1,14 +1,9 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.db import connection
-from django.shortcuts import render
-from django.views import View
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
-import os
-import json
 import urllib.parse as uparse
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
 import pandas as pd
@@ -88,6 +83,7 @@ def set_bbox(filepath, video_id):
         for k in range(len(label_list)):
             bbox_attribute_instance = bbox_attributes(bbox = bbox_instance_obj, attributes = label_list[k])
             bbox_attribute_instance.save()
+            
 
 def set_video_data(filepath):
     src_path = '/workspace/test_jhlee/search_module'
@@ -102,7 +98,8 @@ def set_video_data(filepath):
 
     return video_obj
 
-def call_serializer(filepath):
+def call_serializer(self):
+    filepath = '/workspace/test_jhlee/search_module/test.csv'
     video_id = set_video_data(filepath)
     set_bbox(filepath, video_id)
 
@@ -153,19 +150,18 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             +" and search_app_video_data.id=" 
             +str(video_id_list[i])
             )
+            
     raw_query = ""
-    q1 = ' union '.join(string_query_toptype)
+    q1 = 'select * from(' + ' union '.join(string_query_toptype) + ')'
     raw_query += q1
-    q2 = ' union '.join(string_query_topcolor)
+    q2 = 'select * from(' + ' union '.join(string_query_topcolor) + ')'
     raw_query += ' intersect ' + q2
-    
     if len(string_query_bottomtype) != 0:
-        q3 = ' union '.join(string_query_bottomtype)
+        q3 = 'select * from(' + ' union '.join(string_query_bottomtype) + ')'
         raw_query +=' ' + condition + ' ' + q3 
     if len(string_query_bottomcolor) != 0:
-        q4 = ' union '.join(string_query_bottomcolor)
-        raw_query += ' intersect ' + q4
-    
+        q4 = 'select * from(' + ' union '.join(string_query_bottomcolor) + ')'
+        raw_query += ' intersect ' + q4    
     raw_query += ";"
 
     with connection.cursor() as cursor:
@@ -204,8 +200,6 @@ def get_data(data):
             bottom_color_list.append(data[i][1])
         elif data[i][0] == "condition":
             condition.append(data[i][1])
-        
-    print(bottom_color_list)
         
     result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
     search_serializer = SearchSerializer(result_set, many = True)

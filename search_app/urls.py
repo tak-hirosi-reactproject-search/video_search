@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, call_serializer, SearchViewSet
 from urllib import parse
 import json
