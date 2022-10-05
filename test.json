@@ -1,8 +1,8 @@
 {
-    "video_id" : [23, 24],
-    "top_type" : ["long_sleeve", "short_sleeve"],
-    "top_color" : ["blue", "black"],
+    "video_id" : [27, 28],
+    "top_type" : ["long_sleeve"],
+    "top_color" : ["blue", "black", "white"],
     "bottom_type" : ["short_pants", "long_pants"],
-    "bottom_color" : ["white", "grey"],
-    "condition" : ["intersect"]
+    "bottom_color" : ["white", "black"],
+    "condition" : ["union"]
 }

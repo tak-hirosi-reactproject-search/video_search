@@ -80,10 +80,10 @@ def set_bbox(filepath, video_id):
                     label_list.append(label_attribute_obj)
         
         
-        filename = data_df[i][0].split('/')
+        filename = data_df[i][0].split("/")
         video_name_jpg = filename[1].split("_")
         video_name = video_name_jpg[2].split(".") 
-        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = filename[1], mainclass = label_mainclass_obj)
+        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = data_df[i][0], mainclass = label_mainclass_obj)
         bbox.save()
         bbox_instance_id = list(bbox_data.objects.filter(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0]).values('id'))[0]["id"]
         bbox_instance_obj = bbox_data.objects.get(id = bbox_instance_id)
