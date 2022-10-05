@@ -69,9 +69,6 @@ def set_bbox(filepath, video_id):
                 elif j == 4:
                     type_str = 'bottom_color'
                 
-                if type_index == -1:
-                    break
-                
                 if type_index in range(0, 11):
                     label_attribute_type_id = list(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))[0]["id"]
                     label_attribute_type_obj = labels_attributes_type.objects.get(id = label_attribute_type_id)
@@ -93,7 +90,6 @@ def set_bbox(filepath, video_id):
             bbox_attribute_instance.save()
 
 def set_video_data(filepath):
-    name = os.path.splitext('/')
     src_path = '/workspace/test_jhlee/search_module'
 
     df = pd.read_csv(filepath)
@@ -107,7 +103,6 @@ def set_video_data(filepath):
     return video_obj
 
 def call_serializer(filepath):
-    filepath = '/workspace/test_jhlee/search_module/test.csv'
     video_id = set_video_data(filepath)
     set_bbox(filepath, video_id)
 
@@ -158,14 +153,21 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             +" and search_app_video_data.id=" 
             +str(video_id_list[i])
             )
-    
+    raw_query = ""
     q1 = ' union '.join(string_query_toptype)
+    raw_query += q1
     q2 = ' union '.join(string_query_topcolor)
-    q3 = ' union '.join(string_query_bottomtype)
-    q4 = ' union '.join(string_query_bottomcolor)
+    raw_query += ' intersect ' + q2
     
-    raw_query = q1 + ' intersect ' + q2  + ' ' + condition + ' ' + q3 + ' intersect ' + q4 + ";"
-      
+    if len(string_query_bottomtype) != 0:
+        q3 = ' union '.join(string_query_bottomtype)
+        raw_query +=' ' + condition + ' ' + q3 
+    if len(string_query_bottomcolor) != 0:
+        q4 = ' union '.join(string_query_bottomcolor)
+        raw_query += ' intersect ' + q4
+    
+    raw_query += ";"
+
     with connection.cursor() as cursor:
         cursor.execute(raw_query)
         row = cursor.fetchall()
@@ -202,6 +204,8 @@ def get_data(data):
             bottom_color_list.append(data[i][1])
         elif data[i][0] == "condition":
             condition.append(data[i][1])
+        
+    print(bottom_color_list)
         
     result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
     search_serializer = SearchSerializer(result_set, many = True)

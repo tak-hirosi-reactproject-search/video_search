@@ -3,6 +3,6 @@
     "top_type" : ["long_sleeve"],
     "top_color" : ["blue", "black", "white"],
     "bottom_type" : ["short_pants", "long_pants"],
-    "bottom_color" : ["white", "black"],
+    "bottom_color" : ["white"],
     "condition" : ["union"]
 }
