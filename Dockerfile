@@ -12,7 +12,7 @@ ARG portnum
 
 # Required to build Ubuntu 20.04 without user prompts with DLFW container
 ENV DEBIAN_FRONTEND=noninteractive
-ENV Portnum=0.0.0.0:${portnum}
+ENV Portnum="0.0.0.0:${portnum}"
 
 # install
 RUN apt-get update && apt-get install -y sudo \
@@ -29,4 +29,4 @@ COPY . .
 # RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["echo", "manage.py", "runserver", $Portnum]
+CMD ["echo", "manage.py", "runserver", ${Portnum}]
