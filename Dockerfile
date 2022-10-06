@@ -29,4 +29,4 @@ COPY . .
 # RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["echo", "manage.py", "runserver", ${Portnum}]
+RUN echo manage.py runserver ${Portnum}]
