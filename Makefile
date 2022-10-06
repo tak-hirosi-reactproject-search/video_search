@@ -14,14 +14,14 @@ run:
 	@echo 'docker run -ti --name="$(APP_NAME)_$(USR)" --shm-size 32gb -p $(PORT_NUM):$(PORT_NUM) -v $(MODEL_VOLUME) $(IMAGE_NAME)'
 	docker run -ti --name="$(APP_NAME)_$(USR)" --shm-size 32gb -p $(PORT_NUM):$(PORT_NUM) -v $(MODEL_VOLUME) $(IMAGE_NAME)
 stop:
-	@echo 'stop docker $(APP_NAME)'
-	docker stop $(APP_NAME)
+	@echo 'stop docker $(APP_NAME)_$(USR)'
+	docker stop $(APP_NAME)_$(USR)
 rm:
-	@echo 'rm docker $(APP_NAME)'
-	docker rm -f $(APP_NAME)
+	@echo 'rm docker $(APP_NAME)_$(USR)'
+	docker rm -f $(APP_NAME)_$(USR)
 rmi:
 	@echo 'rmi docker $(IMAGE_NAME)'
 	docker rmi $(IMAGE_NAME)
 rmrmi:
-	docker stop $(APP_NAME) && docker rm $(APP_NAME)
+	docker stop $(APP_NAME)_$(USR) && docker rm $(APP_NAME)_$(USR)
 	docker rmi $(IMAGE_NAME)
