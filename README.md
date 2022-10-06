@@ -2,7 +2,7 @@
 # Video Search
 using (react - django RESTapi ) study project!
 
-#세팅
+# 세팅
 docker를 실행할 수 있는 환경
 
 
@@ -10,7 +10,7 @@ docker를 실행할 수 있는 환경
 ```bash
 git clone https://github.com/tak-hirosi-reactproject-search/video_search.git
 cd video_search
-make build
+
 ```
 
 # Please Set Makefile
@@ -22,13 +22,17 @@ IMAGE_NAME= {# change }
 TARGET_PATH={# change }/video_search
 ```
 
-# how to docker run
+# how to make docker
 ```bash
-git pull
-make run
+make build
 ```
 
 # how to server run
 ```bash
-python manage.py runserver
+make run
+```
+
+# how to delete container
+```bash
+make rm
 ```

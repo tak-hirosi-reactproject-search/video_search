@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, call_serializer, SearchViewSet
+from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet
 from urllib import parse
 import json
 
@@ -45,5 +45,5 @@ urlpatterns = [
     path("label_attr/", label_attr_list),
     path("label_type/", label_type_list),
     path("search/<str:url>/", searched_list),
-    path("serialize/", call_serializer),
+    path("serialize/", match_filename),
 ]

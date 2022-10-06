@@ -18,7 +18,7 @@ ENV Portnum="0.0.0.0:${portnum}"
 RUN apt-get update && apt-get install -y sudo \
     && apt-get install -y libgl1-mesa-glx git locales \
     && locale-gen ko_KR.UTF-8
-# RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+
 
 # 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
@@ -26,7 +26,6 @@ RUN pip install --upgrade pip
 RUN mkdir -p /${fname}
 WORKDIR /${fname}
 COPY . .
-# RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN pip install -r requirements.txt
 
+RUN pip install -r requirements.txt
 CMD python manage.py runserver ${Portnum}

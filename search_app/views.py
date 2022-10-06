@@ -7,6 +7,7 @@ from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSe
 import urllib.parse as uparse
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
 import pandas as pd
+import os
 
 def set_bbox(filepath, video_id):
     df = pd.read_csv(filepath)
@@ -71,7 +72,7 @@ def set_bbox(filepath, video_id):
                     label_attribute_obj = labels_attributes.objects.get(id = label_attribute_id)
                     label_list.append(label_attribute_obj)
         
-        
+
         filename = data_df[i][0].split("/")
         video_name_jpg = filename[1].split("_")
         video_name = video_name_jpg[2].split(".") 
@@ -86,7 +87,7 @@ def set_bbox(filepath, video_id):
             
 
 def set_video_data(filepath):
-    src_path = '/workspace/test_jhlee/search_module'
+    src_path = '/workspace/test_jhlee/search_module/testdata'
 
     df = pd.read_csv(filepath)
     data_df = df.values.tolist()
@@ -98,13 +99,35 @@ def set_video_data(filepath):
 
     return video_obj
 
-def call_serializer(self):
-    filepath = '/workspace/test_jhlee/search_module/test.csv'
+def call_serializer(filepath):
     video_id = set_video_data(filepath)
     set_bbox(filepath, video_id)
 
     return HttpResponse('<h1> Serialized </h1>')
 
+
+def match_filename(self):
+    filecount = video_data.objects.values("name").count()
+    filelist = []
+    check = False
+    for j in range(filecount):
+        filelist.append(list(video_data.objects.all().values('name'))[j]["name"])
+        
+    dir_file = []
+    dir_path = '/workspace/test_jhlee/search_module/testdata'
+    for (root, directories, files) in os.walk(dir_path):
+        for file in files:  
+            all_path = os.path.join(root, file)
+            if '.csv' in all_path:
+                dir_file.append(all_path)
+    print(dir_file)
+    print("==========")
+
+    if check == True:
+        for i in range(len(dir_file)):
+            if dir_file[i] not in filelist:
+                call_serializer(dir_file[i])
+    return HttpResponse('<h1> serialize할 파일이름 없음 </h1>')
 
 def search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, con):
         
