@@ -15,10 +15,11 @@ make build
 
 # Please Set Makefile
 ```Makefile
-UID=1014 # change
-USR=tglee # change
-APP_NAME=video_search # change
-IMAGE_NAME=video_search_image # change
+UID=1014 {# change }
+USR=tglee {# change }
+APP_NAME=videoapi
+IMAGE_NAME= {# change }
+TARGET_PATH={# change }/video_search
 ```
 
 # how to docker run
