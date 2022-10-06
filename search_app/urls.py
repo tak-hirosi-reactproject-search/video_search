@@ -31,12 +31,12 @@ searched_list = SearchViewSet.as_view({
     'get' : 'list'
 })
 
-with open('/workspace/test_jhlee/search_module/test.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
+# with open('/workspace/test_jhlee/search_module/test.json', 'r', encoding='utf-8') as file:
+#     data = json.load(file)
 
-#url 형식
-url = parse.urlencode(data, doseq=True)
-print(url)
+# #url 형식
+# url = parse.urlencode(data, doseq=True)
+# print(url)
 
 urlpatterns = [
     path("video/", video_list),
