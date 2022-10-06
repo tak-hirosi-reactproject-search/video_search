@@ -31,4 +31,4 @@ RUN pip install -r requirements.txt
 
 RUN echo 'python manage.py runserver ${Portnum}'
 RUN ["/bin/bash"]
-CMD ["python", "manage.py", "runserver", "`${Portnum}`"]
+CMD ["python", "manage.py", "runserver", "$Portnum"]
