@@ -7,6 +7,7 @@ SHELL ["/bin/bash", "-c"]
 ARG uid
 ARG gid
 ARG usr
+ARG fname
 RUN groupadd -r -f -g ${gid} ${usr} && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash ${usr}
 RUN usermod -aG sudo ${usr}
 RUN echo ${usr}:${usr}1 | chpasswd
@@ -23,8 +24,8 @@ RUN apt-get update && apt-get install -y sudo \
 # 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
 RUN pip install --upgrade pip
-RUN mkdir -p /video_search && chown ${usr} /video_search
-WORKDIR /video_search
+RUN mkdir -p /${fname} && chown ${usr} /${fname}
+WORKDIR /${fname}
 COPY . .
 # RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
