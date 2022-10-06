@@ -9,6 +9,7 @@ ARG gid
 ARG usr
 ARG fname
 ARG portnum
+A
 RUN groupadd -r -f -g ${gid} ${usr} && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash ${usr}
 RUN usermod -aG sudo ${usr}
 RUN echo ${usr}:${usr}1 | chpasswd
@@ -33,4 +34,4 @@ RUN pip install -r requirements.txt
 
 USER ${usr}
 RUN ["/bin/bash"]
-CMD ["python", "manage.py", "runserver", "0.0.0.0:${portnum}"]
+CMD ["python", "manage.py", "runserver", 0.0.0.0:${portnum}]
