@@ -3,14 +3,15 @@ USR=tglee
 APP_NAME=video_search
 IMAGE_NAME=video_search_image
 MODEL_VOLUME = /home/${USR}/metaproject/video_search:/$(APP_NAME)
+PORT_NUM = 3355
  
 # Build and run the container
 build:
-	@echo "docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(APP_NAME) -t $(IMAGE_NAME) ."
-	docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(APP_NAME) -t $(IMAGE_NAME) .
+	@echo "docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(APP_NAME) --build-arg portnum=$(PORT_NUM) -t $(IMAGE_NAME) ."
+	docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(APP_NAME) --build-arg portnum=$(PORT_NUM) -t $(IMAGE_NAME) .
 run:
-	@echo 'docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p 3355:3355 -v $(MODEL_VOLUME) $(IMAGE_NAME)'
-	docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p 3355:3355 -v $(MODEL_VOLUME) $(IMAGE_NAME)
+	@echo 'docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p $(PORT_NUM):$(PORT_NUM) -v $(MODEL_VOLUME) $(IMAGE_NAME)'
+	docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p $(PORT_NUM):$(PORT_NUM) -v $(MODEL_VOLUME) $(IMAGE_NAME)
 stop:
 	@echo 'stop docker $(APP_NAME)'
 	docker stop $(APP_NAME)
