@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y sudo \
 # 프로젝트 필요 소스 다운로드
 ENV LC_ALL ko_KR.UTF-8
 RUN pip install --upgrade pip
-RUN mkdir -p /${fname} && chown ${usr} /${fname}
+RUN mkdir -p /${fname}
 WORKDIR /${fname}
 COPY . .
 # RUN /usr/local/bin/python -m pip install --upgrade pip
