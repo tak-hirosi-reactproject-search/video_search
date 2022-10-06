@@ -1,5 +1,5 @@
-UID=1014
-USR=tglee
+UID=
+USR=
 APP_NAME=videoapi
 IMAGE_NAME=videoapi_image
 TARGET_PATH=/home/${USR}/metaproject/video_search
