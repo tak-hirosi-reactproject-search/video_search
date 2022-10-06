@@ -2,7 +2,7 @@ UID=1014
 USR=tglee
 APP_NAME=video_search
 IMAGE_NAME=video_search_image
-MODEL_VOLUME = /home/${USR}/metaproject/$(APP_NAME):/$(APP_NAME)
+MODEL_VOLUME = /home/${USR}/metaproject/video_search:/$(APP_NAME)
  
 # Build and run the container
 build:
