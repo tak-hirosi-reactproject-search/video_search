@@ -9,8 +9,8 @@ build:
 	@echo "docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(APP_NAME) -t $(IMAGE_NAME) ."
 	docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(APP_NAME) -t $(IMAGE_NAME) .
 run:
-	@echo 'docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p 8000:3333 -v $(MODEL_VOLUME) $(IMAGE_NAME)'
-	docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p 8000:3333 -v $(MODEL_VOLUME) $(IMAGE_NAME)
+	@echo 'docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p 3355:3355 -v $(MODEL_VOLUME) $(IMAGE_NAME)'
+	docker run -ti --name="$(APP_NAME)" --shm-size 32gb -p 3355:3355 -v $(MODEL_VOLUME) $(IMAGE_NAME)
 stop:
 	@echo 'stop docker $(APP_NAME)'
 	docker stop $(APP_NAME)
