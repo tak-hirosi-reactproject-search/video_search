@@ -114,20 +114,21 @@ def match_filename(self):
         filelist.append(list(video_data.objects.all().values('name'))[j]["name"])
         
     dir_file = []
-    dir_path = '/workspace/test_jhlee/search_module/testdata'
+    dir_path = '/workspace/test_jhlee/search_module/testdata' #경로수정필요
     for (root, directories, files) in os.walk(dir_path):
         for file in files:  
             all_path = os.path.join(root, file)
             if '.csv' in all_path:
-                dir_file.append(all_path)
-    print(dir_file)
-    print("==========")
+                temp_path = all_path.split('.')
+                filename = temp_path[0].split('/')
+                dir_file.append(filename[5])                  #수정필요
 
     if check == True:
         for i in range(len(dir_file)):
             if dir_file[i] not in filelist:
                 call_serializer(dir_file[i])
-    return HttpResponse('<h1> serialize할 파일이름 없음 </h1>')
+    else:
+        return HttpResponse('<h1> serialize할 파일이름 없음 </h1>') #수정필요
 
 def search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, con):
         
