@@ -10,9 +10,6 @@ ARG usr
 ARG fname
 ARG portnum
 ENV Portnum 0.0.0.0:${portnum}
-RUN groupadd -r -f -g ${gid} ${usr} && useradd -o -r -l -u ${uid} -g ${gid} -ms /bin/bash ${usr}
-RUN usermod -aG sudo ${usr}
-RUN echo ${usr}:${usr}1 | chpasswd
 
 # Required to build Ubuntu 20.04 without user prompts with DLFW container
 ENV DEBIAN_FRONTEND=noninteractive
@@ -35,4 +32,4 @@ RUN pip install -r requirements.txt
 USER ${usr}
 RUN echo 'python manage.py runserver ${Portnum}'
 RUN ["/bin/bash"]
-CMD ["python", "manage.py", "runserver", "${Portnum}"]
+CMD ["python", "manage.py", "runserver", "`${Portnum}`"]
