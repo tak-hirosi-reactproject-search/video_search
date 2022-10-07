@@ -5,7 +5,7 @@ IMAGE_NAME=videoapi_image
 TARGET_PATH=/home/${USR}/workspace/helloworld/search_module
 MODEL_VOLUME = ${TARGET_PATH}:/$(APP_NAME)
 PORT_NUM=3333
-VIDEO_PATH=/data/meta-project
+VIDEO_PATH=/home/samchu/project-meta/output_metadata/
  
 # Build and run the container
 build:
