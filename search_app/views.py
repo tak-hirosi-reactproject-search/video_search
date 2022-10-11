@@ -115,7 +115,7 @@ def match_filename(self):
     for (root, directories, files) in os.walk(dir_path):
         for file in files:  
            file_name, extension = os.path.splitext(file)
-            if extension == ".csv":
+           if extension == ".csv":
                 dir_file.append(file_name) 
                 count += 1                  
 
