@@ -87,7 +87,7 @@ def set_bbox(filepath, video_id):
             
 
 def set_video_data(filepath):
-    src_path = '/workspace/test_jhlee/search_module/testdata'
+    src_path = '/videoapi/temps/output_metadata'
 
     df = pd.read_csv(filepath)
     data_df = df.values.tolist()
@@ -103,32 +103,29 @@ def call_serializer(filepath):
     video_id = set_video_data(filepath)
     set_bbox(filepath, video_id)
 
-    return HttpResponse('<h1> Serialized </h1>')
-
-
 def match_filename(self):
     filecount = video_data.objects.values("name").count()
     filelist = []
-    check = False
     for j in range(filecount):
         filelist.append(list(video_data.objects.all().values('name'))[j]["name"])
         
     dir_file = []
-    dir_path = '/workspace/test_jhlee/search_module/testdata' #경로수정필요
+    dir_path = '/videoapi/temps/output_metadata' 
+    count = 0
     for (root, directories, files) in os.walk(dir_path):
         for file in files:  
-            all_path = os.path.join(root, file)
-            if '.csv' in all_path:
-                temp_path = all_path.split('.')
-                filename = temp_path[0].split('/')
-                dir_file.append(filename[5])                  #수정필요
+           file_name, extension = os.path.splitext(file)
+           if extension == ".csv":
+                dir_file.append(file_name) 
+                count += 1                  
 
-    if check == True:
+    if count != filecount:
         for i in range(len(dir_file)):
             if dir_file[i] not in filelist:
-                call_serializer(dir_file[i])
+                call_serializer(dir_path + '/' + dir_file[i] + extension)
+        return HttpResponse('<h1> Serialized </h1>')
     else:
-        return HttpResponse('<h1> serialize할 파일이름 없음 </h1>') #수정필요
+        return HttpResponse('<h1> serialize할 파일이름 없음 </h1>')
 
 def search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, con):
         
