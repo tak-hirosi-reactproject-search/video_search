@@ -14,6 +14,7 @@ VIDEO_PATH=${VIDEO_TARGET_PATH}:${VIDEO_DST_PATH}
  
 # Build and run the container
 build:
+	@echo "====<UID=${UID}> <USR=${USR}> <PORT_NUM=${PORT_NUM}> <VIDEO_TARGET_PATH=${VIDEO_TARGET_PATH}>==="
 	@echo 'docker image build'
 	docker image build --build-arg uid=$(UID) --build-arg gid=$(UID) --build-arg usr=$(USR) --build-arg fname=$(SRC_NAME) --build-arg portnum=$(PORT_NUM) --build-arg datapath=".${VIDEO_TARGET_PATH}" -t $(IMAGE_NAME) .
 
