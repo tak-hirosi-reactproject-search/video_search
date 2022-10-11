@@ -2,37 +2,50 @@
 # Video Search
 using (react - django RESTapi ) study project!
 
-# 세팅
-docker를 실행할 수 있는 환경
 
-
-# how to install (source & docker container)
+# how to install (source)
 ```bash
 git clone https://github.com/tak-hirosi-reactproject-search/video_search.git
 cd video_search
-
 ```
 
-# Please Set Makefile
+# 가상환경 세팅
+pip를 실행할 수 있는 환경
+
+### how to set env
+```bash
+pip install -r requirements.txt
+```
+
+### how to run server
+```bash
+python manage.py runserver 0.0.0.0:3355
+```
+
+# docker 세팅
+docker를 실행할 수 있는 환경
+
+
+### Please Set Makefile
 ```Makefile
-UID=1014 {# change }
-USR=tglee {# change }
+UID={# change }
+USR={# change }
 APP_NAME=videoapi
-IMAGE_NAME= {# change }
+IMAGE_NAME={# change }
 TARGET_PATH={# change }/video_search
 ```
 
-# how to make docker
+### how to make docker
 ```bash
 make build
 ```
 
-# how to server run
+### how to server run (for docker)
 ```bash
 make run
 ```
 
-# how to delete container
+### how to delete container (for docker)
 ```bash
 make rm
 ```
