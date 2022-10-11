@@ -28,11 +28,10 @@ docker를 실행할 수 있는 환경
 
 ### Please Set Makefile
 ```Makefile
-UID={# change }
-USR={# change }
-APP_NAME=videoapi
-IMAGE_NAME={# change }
-TARGET_PATH={# change }/video_search
+UID={#Change}
+USR={#Change}
+PORT_NUM={#Change}
+VIDEO_TARGET_PATH=/home/samchu/project-meta/
 ```
 
 ### how to make docker
