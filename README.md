@@ -31,7 +31,7 @@ docker를 실행할 수 있는 환경
 UID={#Change}
 USR={#Change}
 PORT_NUM={#Change}
-VIDEO_TARGET_PATH=/home/samchu/project-meta/
+VIDEO_TARGET_PATH=/home/samchu/project-meta/ # {Change}
 ```
 
 ### how to make docker
