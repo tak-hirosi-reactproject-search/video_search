@@ -1,6 +1,6 @@
-UID=1006
-USR=jhlee
-PORT_NUM=3333
+UID=
+USR=
+PORT_NUM=
 VIDEO_TARGET_PATH=/home/samchu/project-meta/
 
 SRC_NAME=videoapi
