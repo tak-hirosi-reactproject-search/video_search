@@ -10,6 +10,7 @@ import pandas as pd
 import os
 
 def set_bbox(filepath, video_id):
+    print(video_id)
     df = pd.read_csv(filepath)
     data_df = df.values.tolist()
 
@@ -19,9 +20,8 @@ def set_bbox(filepath, video_id):
     for i in range(len(data_df)):    
 
         label_list = []
-
         for j in range(len(data_df[0])):
-            if j in range(1, 5):
+            if j in range(3, 7):
                 type_index = -1
                 type_str = ''
 
@@ -56,27 +56,30 @@ def set_bbox(filepath, video_id):
                 elif data_df[i][j] == "black":
                     type_index = 10
 
-                if j == 1:
+                if j == 3:
                     type_str = 'top_type'
-                elif j == 2:
-                    type_str = 'top_color'
-                elif j == 3:
-                    type_str = 'bottom_type'
                 elif j == 4:
+                    type_str = 'bottom_type'
+                elif j == 5:
+                    type_str = 'top_color'
+                elif j == 6:
                     type_str = 'bottom_color'
                 
                 if type_index in range(0, 11):
+                    print(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))
                     label_attribute_type_id = list(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))[0]["id"]
                     label_attribute_type_obj = labels_attributes_type.objects.get(id = label_attribute_type_id)
+                    print(data_df[i][j])
+                    print(label_attribute_type_obj)
+                    print(type_index)
                     label_attribute_id = list(labels_attributes.objects.filter(type = label_attribute_type_obj, index = type_index).values('id'))[0]["id"]
                     label_attribute_obj = labels_attributes.objects.get(id = label_attribute_id)
                     label_list.append(label_attribute_obj)
-        
 
-        filename = data_df[i][0].split("/")
+        filename = data_df[i][2].split("/")
         video_name_jpg = filename[1].split("_")
         video_name = video_name_jpg[2].split(".") 
-        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = data_df[i][0], mainclass = label_mainclass_obj)
+        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = data_df[i][2], mainclass = label_mainclass_obj)
         bbox.save()
         bbox_instance_id = list(bbox_data.objects.filter(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0]).values('id'))[0]["id"]
         bbox_instance_obj = bbox_data.objects.get(id = bbox_instance_id)
@@ -87,12 +90,12 @@ def set_bbox(filepath, video_id):
             
 
 def set_video_data(filepath):
-    src_path = '/videoapi/temps/output_metadata'
+    src_path = '/videometadata/csvfiles'
 
     df = pd.read_csv(filepath)
     data_df = df.values.tolist()
-    filename = data_df[0][0].split('/')
-    video_instance = video_data(src_path = src_path, name = filename[0], fps = data_df[0][5], last_frame = data_df[0][6])
+    filename = data_df[0][2].split('/')
+    video_instance = video_data(src_path = src_path, name = filename[0], fps = data_df[0][0], last_frame = data_df[0][1])
     video_instance.save()            
     video_id = list(video_data.objects.all().values('id'))[0]["id"]
     video_obj = video_data.objects.get(id = video_id)
@@ -110,14 +113,16 @@ def match_filename(self):
         filelist.append(list(video_data.objects.all().values('name'))[j]["name"])
         
     dir_file = []
-    dir_path = '/videoapi/temps/output_metadata' 
+    dir_path = '/videometadata/csvfiles' 
     count = 0
     for (root, directories, files) in os.walk(dir_path):
         for file in files:  
            file_name, extension = os.path.splitext(file)
            if extension == ".csv":
-                dir_file.append(file_name) 
-                count += 1                  
+               print("---------------------------")
+               print(file_name)
+               dir_file.append(file_name) 
+               count += 1                  
 
     if count != filecount:
         for i in range(len(dir_file)):
