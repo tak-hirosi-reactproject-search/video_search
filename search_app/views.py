@@ -216,15 +216,30 @@ def get_data(data):
 
     for i in range(len(data)):
         if data[i][0] == 'video_id':
-            video_id_list.append(data[i][1])
+            if "," in data[i][1]:
+                video_id_list = data[i][1].split(",")
+            else:
+                video_id_list.append(data[i][1])
         elif data[i][0] == "top_type":
-            top_type_list.append(data[i][1])
+            if "," in data[i][1]:
+                top_type_list = data[i][1].split(",")
+            else:
+                top_type_list.append(data[i][1])
         elif data[i][0] == "top_color":
-            top_color_list.append(data[i][1])
+            if "," in data[i][1]:
+                top_color_list = data[i][1].split(",")
+            else:
+                top_color_list.append(data[i][1])
         elif data[i][0] == "bottom_type":
-            bottom_type_list.append(data[i][1])
+            if "," in data[i][1]:
+                bottom_type_list = data[i][1].split(",")
+            else:
+                bottom_type_list.append(data[i][1])
         elif data[i][0] == "bottom_color":
-            bottom_color_list.append(data[i][1])
+            if "," in data[i][1]:
+                bottom_color_list = data[i][1].split(",")
+            else:
+                bottom_color_list.append(data[i][1])
         elif data[i][0] == "condition":
             condition.append(data[i][1])
     
