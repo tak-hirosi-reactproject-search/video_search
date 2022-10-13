@@ -34,6 +34,6 @@ class LabelsMainClassSerializer(serializers.ModelSerializer):
     
 class SearchSerializer(serializers.Serializer):
     bbox_id = serializers.IntegerField()
-    crop_img_path = serializers.CharField()
+    image = serializers.ImageField()
     frame_num = serializers.IntegerField()
     obj_id = serializers.IntegerField()

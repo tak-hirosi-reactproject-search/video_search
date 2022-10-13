@@ -10,7 +10,7 @@ import pandas as pd
 import os
 
 def set_bbox(filepath, video_id):
-    print(video_id)
+    # print(video_id)
     df = pd.read_csv(filepath)
     data_df = df.values.tolist()
 
@@ -66,12 +66,12 @@ def set_bbox(filepath, video_id):
                     type_str = 'bottom_color'
                 
                 if type_index in range(0, 11):
-                    print(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))
+                    # print(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))
                     label_attribute_type_id = list(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))[0]["id"]
                     label_attribute_type_obj = labels_attributes_type.objects.get(id = label_attribute_type_id)
-                    print(data_df[i][j])
-                    print(label_attribute_type_obj)
-                    print(type_index)
+                    # print(data_df[i][j])
+                    # print(label_attribute_type_obj)
+                    # print(type_index)
                     label_attribute_id = list(labels_attributes.objects.filter(type = label_attribute_type_obj, index = type_index).values('id'))[0]["id"]
                     label_attribute_obj = labels_attributes.objects.get(id = label_attribute_id)
                     label_list.append(label_attribute_obj)
@@ -79,7 +79,7 @@ def set_bbox(filepath, video_id):
         filename = data_df[i][2].split("/")
         video_name_jpg = filename[1].split("_")
         video_name = video_name_jpg[2].split(".") 
-        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], crop_img_path = data_df[i][2], mainclass = label_mainclass_obj)
+        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], image = f'images/{data_df[i][2]}', mainclass = label_mainclass_obj)
         bbox.save()
         bbox_instance_id = list(bbox_data.objects.filter(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0]).values('id'))[0]["id"]
         bbox_instance_obj = bbox_data.objects.get(id = bbox_instance_id)
@@ -142,7 +142,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
 
     for i in range(len(video_id_list)):
         for j in range(len(top_type_list)):
-            string_query_toptype.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_toptype.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +" where search_app_labels_attributes.value=" 
             + "'" + top_type_list[j] + "'"
             +" and search_app_video_data.id=" 
@@ -150,7 +150,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for k in range(len(top_color_list)):
-            string_query_topcolor.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_topcolor.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.value=" 
             + "'" + top_color_list[k] + "'"
             +" and search_app_labels_attributes.type_id=" 
@@ -160,7 +160,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for l in range(len(bottom_type_list)):
-            string_query_bottomtype.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_bottomtype.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.value=" 
             + "'" + bottom_type_list[l] + "'"
             +" and search_app_video_data.id=" 
@@ -168,7 +168,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for m in range(len(bottom_color_list)):
-            string_query_bottomcolor.append("select bbox_id, crop_img_path, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_bottomcolor.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.value=" 
             + "'" + bottom_color_list[m] + "'"
             +" and search_app_labels_attributes.type_id=" 
@@ -198,7 +198,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     for i in range(len(row)):
         temp_dict = {}
         temp_dict["bbox_id"] = row[i][0]
-        temp_dict["crop_img_path"] = row[i][1]
+        temp_dict["image"] = row[i][1]
         temp_dict["frame_num"] = row[i][2]
         temp_dict["obj_id"] = row[i][3]
         result_set.append(temp_dict)
