@@ -9,6 +9,9 @@ from search_app.models import video_data, bbox_data, bbox_attributes, labels_att
 import pandas as pd
 import os
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 def set_bbox(filepath, video_id):
     # print(video_id)
     df = pd.read_csv(filepath)
@@ -191,12 +194,12 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     with connection.cursor() as cursor:
         cursor.execute(raw_query)
         row = cursor.fetchall()
-    print(row)
+
     result_set = []
     for i in range(len(row)):
         temp_dict = {}
         temp_dict["bbox_id"] = row[i][0]
-        temp_dict["image"] = row[i][1]
+        temp_dict["image"] = f'{static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)}{row[i][1]}'
         temp_dict["frame_num"] = row[i][2]
         temp_dict["obj_id"] = row[i][3]
         result_set.append(temp_dict)
