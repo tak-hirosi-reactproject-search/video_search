@@ -37,3 +37,9 @@ class SearchSerializer(serializers.Serializer):
     image = serializers.ImageField()
     frame_num = serializers.IntegerField()
     obj_id = serializers.IntegerField()
+    
+    def get_image(self, search_result):
+        request = self.context.get('request')
+        image = search_result.image.url
+        return request.build_absolute_uri(image)
+        

@@ -207,9 +207,6 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     return result_set
 
 def get_data(data):
-    print("====data====")
-    print(data)
-    print("============")
     video_id_list = []
     top_type_list = []
     top_color_list = []
@@ -230,34 +227,6 @@ def get_data(data):
             bottom_color_list.append(data[i][1])
         elif data[i][0] == "condition":
             condition.append(data[i][1])
-    
-    print("video_id\ttop_type\ttop_color\tbottom_type\tbottom_color\tcondition")
-    for i in range(10):
-        try:
-            print(f'{video_id_list[i]}\t', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{top_type_list[i]}', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{top_color_list[i]}\t', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{bottom_type_list[i]}', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{bottom_color_list[i]}\t', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{condition[i]}', end='\t')
-        except:
-            print(f'\t', end='\t')
-        print()
     
     result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
     search_serializer = SearchSerializer(result_set, many = True)
