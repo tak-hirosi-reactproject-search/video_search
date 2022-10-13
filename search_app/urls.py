@@ -2,9 +2,6 @@ from django.urls import path
 from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet
 from urllib import parse
 import json
-from django.views.static import serve
-from django.conf import settings
-from django.conf.urls.static import static
 
 # Blog 목록 보여주기
 video_list = VideodataViewSet.as_view({
@@ -51,4 +48,8 @@ urlpatterns = [
     path("serialize/", match_filename),
 ]
 
+
+from django.views.static import serve
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -66,12 +66,8 @@ def set_bbox(filepath, video_id):
                     type_str = 'bottom_color'
                 
                 if type_index in range(0, 11):
-                    # print(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))
                     label_attribute_type_id = list(labels_attributes_type.objects.filter(mainclass = label_mainclass_obj, type = type_str).values('id'))[0]["id"]
                     label_attribute_type_obj = labels_attributes_type.objects.get(id = label_attribute_type_id)
-                    # print(data_df[i][j])
-                    # print(label_attribute_type_obj)
-                    # print(type_index)
                     label_attribute_id = list(labels_attributes.objects.filter(type = label_attribute_type_obj, index = type_index).values('id'))[0]["id"]
                     label_attribute_obj = labels_attributes.objects.get(id = label_attribute_id)
                     label_list.append(label_attribute_obj)
@@ -79,7 +75,11 @@ def set_bbox(filepath, video_id):
         filename = data_df[i][2].split("/")
         video_name_jpg = filename[1].split("_")
         video_name = video_name_jpg[2].split(".") 
-        bbox = bbox_data(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0], image = f'images/{data_df[i][2]}', mainclass = label_mainclass_obj)
+        bbox = bbox_data(video = video_id, 
+                         frame_num = video_name_jpg[0], 
+                         obj_id = video_name[0], 
+                         image = f'images/{data_df[i][2]}', 
+                         mainclass = label_mainclass_obj)
         bbox.save()
         bbox_instance_id = list(bbox_data.objects.filter(video = video_id, frame_num = video_name_jpg[0], obj_id = video_name[0]).values('id'))[0]["id"]
         bbox_instance_obj = bbox_data.objects.get(id = bbox_instance_id)
@@ -119,8 +119,6 @@ def match_filename(self):
         for file in files:  
            file_name, extension = os.path.splitext(file)
            if extension == ".csv":
-               print("---------------------------")
-               print(file_name)
                dir_file.append(file_name) 
                count += 1                  
 
@@ -139,11 +137,11 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     string_query_topcolor = []
     string_query_bottomtype = []
     string_query_bottomcolor = []
-
+    
     for i in range(len(video_id_list)):
         for j in range(len(top_type_list)):
             string_query_toptype.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
-            +" where search_app_labels_attributes.value=" 
+            +" where search_app_labels_attributes.name=" 
             + "'" + top_type_list[j] + "'"
             +" and search_app_video_data.id=" 
             +str(video_id_list[i])
@@ -151,7 +149,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
         
         for k in range(len(top_color_list)):
             string_query_topcolor.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
-            +"where search_app_labels_attributes.value=" 
+            +"where search_app_labels_attributes.name=" 
             + "'" + top_color_list[k] + "'"
             +" and search_app_labels_attributes.type_id=" 
             +"2" 
@@ -161,7 +159,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
         
         for l in range(len(bottom_type_list)):
             string_query_bottomtype.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
-            +"where search_app_labels_attributes.value=" 
+            +"where search_app_labels_attributes.name=" 
             + "'" + bottom_type_list[l] + "'"
             +" and search_app_video_data.id=" 
             +str(video_id_list[i])
@@ -169,7 +167,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
         
         for m in range(len(bottom_color_list)):
             string_query_bottomcolor.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
-            +"where search_app_labels_attributes.value=" 
+            +"where search_app_labels_attributes.name=" 
             + "'" + bottom_color_list[m] + "'"
             +" and search_app_labels_attributes.type_id=" 
             +"4" 
@@ -193,7 +191,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     with connection.cursor() as cursor:
         cursor.execute(raw_query)
         row = cursor.fetchall()
-
+    print(row)
     result_set = []
     for i in range(len(row)):
         temp_dict = {}
@@ -206,6 +204,9 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     return result_set
 
 def get_data(data):
+    print("====data====")
+    print(data)
+    print("============")
     video_id_list = []
     top_type_list = []
     top_color_list = []
@@ -226,7 +227,35 @@ def get_data(data):
             bottom_color_list.append(data[i][1])
         elif data[i][0] == "condition":
             condition.append(data[i][1])
-        
+    
+    print("video_id\ttop_type\ttop_color\tbottom_type\tbottom_color\tcondition")
+    for i in range(10):
+        try:
+            print(f'{video_id_list[i]}\t', end='\t')
+        except:
+            print(f'\t', end='\t')
+        try:
+            print(f'{top_type_list[i]}', end='\t')
+        except:
+            print(f'\t', end='\t')
+        try:
+            print(f'{top_color_list[i]}\t', end='\t')
+        except:
+            print(f'\t', end='\t')
+        try:
+            print(f'{bottom_type_list[i]}', end='\t')
+        except:
+            print(f'\t', end='\t')
+        try:
+            print(f'{bottom_color_list[i]}\t', end='\t')
+        except:
+            print(f'\t', end='\t')
+        try:
+            print(f'{condition[i]}', end='\t')
+        except:
+            print(f'\t', end='\t')
+        print()
+    
     result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
     search_serializer = SearchSerializer(result_set, many = True)
 

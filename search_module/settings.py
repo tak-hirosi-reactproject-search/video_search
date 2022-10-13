@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'search_app',
     'rest_framework',
     "corsheaders",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
