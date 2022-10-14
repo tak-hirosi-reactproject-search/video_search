@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.db import connection
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -10,7 +9,6 @@ import pandas as pd
 import os
 
 def set_bbox(filepath, video_id):
-    # print(video_id)
     df = pd.read_csv(filepath)
     data_df = df.values.tolist()
 
@@ -140,7 +138,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     
     for i in range(len(video_id_list)):
         for j in range(len(top_type_list)):
-            string_query_toptype.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_toptype.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +" where search_app_labels_attributes.name=" 
             + "'" + top_type_list[j] + "'"
             +" and search_app_video_data.id=" 
@@ -148,7 +146,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for k in range(len(top_color_list)):
-            string_query_topcolor.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_topcolor.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.name=" 
             + "'" + top_color_list[k] + "'"
             +" and search_app_labels_attributes.type_id=" 
@@ -158,7 +156,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for l in range(len(bottom_type_list)):
-            string_query_bottomtype.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_bottomtype.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.name=" 
             + "'" + bottom_type_list[l] + "'"
             +" and search_app_video_data.id=" 
@@ -166,7 +164,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for m in range(len(bottom_color_list)):
-            string_query_bottomcolor.append("select bbox_id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_bottomcolor.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.name=" 
             + "'" + bottom_color_list[m] + "'"
             +" and search_app_labels_attributes.type_id=" 
@@ -187,26 +185,14 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
         q4 = 'select * from(' + ' union '.join(string_query_bottomcolor) + ')'
         raw_query += ' intersect ' + q4    
     raw_query += ";"
-
-    with connection.cursor() as cursor:
-        cursor.execute(raw_query)
-        row = cursor.fetchall()
-    print(row)
-    result_set = []
-    for i in range(len(row)):
-        temp_dict = {}
-        temp_dict["bbox_id"] = row[i][0]
-        temp_dict["image"] = row[i][1]
-        temp_dict["frame_num"] = row[i][2]
-        temp_dict["obj_id"] = row[i][3]
-        result_set.append(temp_dict)
+    
+    queryset = bbox_data.objects.raw(raw_query)
+    for obj in queryset:
+        print(obj.image)
         
-    return result_set
+    return queryset
 
 def get_data(data):
-    print("====data====")
-    print(data)
-    print("============")
     video_id_list = []
     top_type_list = []
     top_color_list = []
@@ -243,37 +229,8 @@ def get_data(data):
         elif data[i][0] == "condition":
             condition.append(data[i][1])
     
-    print("video_id\ttop_type\ttop_color\tbottom_type\tbottom_color\tcondition")
-    for i in range(10):
-        try:
-            print(f'{video_id_list[i]}\t', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{top_type_list[i]}', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{top_color_list[i]}\t', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{bottom_type_list[i]}', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{bottom_color_list[i]}\t', end='\t')
-        except:
-            print(f'\t', end='\t')
-        try:
-            print(f'{condition[i]}', end='\t')
-        except:
-            print(f'\t', end='\t')
-        print()
-    
     result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
     search_serializer = SearchSerializer(result_set, many = True)
-
     return search_serializer.data
    
 
@@ -304,8 +261,7 @@ class LabelTypeViewSet(viewsets.ModelViewSet):
     serializer_class = LabelsTypeSerializer
 
 class SearchViewSet(viewsets.ModelViewSet):
-    queryset = bbox_data.objects.all()
-
+    queryset = bbox_attributes.objects.all()
     def list(self, request, url):
         data = uparse.parse_qsl(url, keep_blank_values=True)
         queryset = get_data(data)

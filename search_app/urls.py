@@ -1,7 +1,5 @@
 from django.urls import path
 from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet
-from urllib import parse
-import json
 
 # Blog 목록 보여주기
 video_list = VideodataViewSet.as_view({
@@ -30,13 +28,6 @@ label_type_list = LabelTypeViewSet.as_view({
 searched_list = SearchViewSet.as_view({
     'get' : 'list'
 })
-
-with open('/videoapi/testdata/test.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
-
-#url 형식
-url = parse.urlencode(data, doseq=True)
-print(url)
 
 urlpatterns = [
     path("video/", video_list),

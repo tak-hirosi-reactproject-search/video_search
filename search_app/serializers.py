@@ -33,7 +33,7 @@ class LabelsMainClassSerializer(serializers.ModelSerializer):
         fields = '__all__'
     
 class SearchSerializer(serializers.Serializer):
-    bbox_id = serializers.IntegerField()
-    image = serializers.ImageField()
+    id = serializers.IntegerField()
+    image = serializers.ImageField(use_url=True)
     frame_num = serializers.IntegerField()
     obj_id = serializers.IntegerField()
