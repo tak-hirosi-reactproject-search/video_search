@@ -1,5 +1,5 @@
 from django.db import models
-
+from django_db_views.db_view import DBView
 from django.db.models import CASCADE, Model
 
 from pathlib import Path
@@ -67,3 +67,29 @@ class bbox_attributes(Model):
                 name = "unique box attributes"
             )
         ]  
+
+
+
+class search_result(DBView):
+    bbox = models.ForeignKey(to="bbox_data", on_delete=models.DO_NOTHING, verbose_name="BBOX ID")
+    obj_id = models.PositiveSmallIntegerField(verbose_name="Object ID")
+    image = models.ImageField(blank=True, null=True, upload_to="images/", verbose_name="Image")
+    fps = models.FloatField(verbose_name="FPS", null=True)
+    last_frame = models.FloatField(verbose_name="Last Frame", null=True)
+    
+    view_defintion="""
+        SELECT
+            "search_app_bbox_attributes"."bbox_id" as bbox_id,
+            "search_app_bbox_data"."image" as image,	
+            "search_app_video_data"."fps" as fps,
+            "search_app_bbox_data"."obj_id" as last_frame
+        FROM "search_app_bbox_attributes"
+        INNER JOIN "search_app_bbox_data"
+            ON ("search_app_bbox_attributes"."bbox_id" = "search_app_bbox_data"."id")
+        INNER JOIN "search_app_video_data"
+            ON ("search_app_bbox_data"."video_id" = "search_app_video_data"."id")
+    """
+    
+    class Meta:
+        managed = False
+        db_table = "search_result"

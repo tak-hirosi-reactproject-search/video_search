@@ -9,5 +9,6 @@ markdown>=3.4.1
 django-cors-headers==3.13.0
 pandas
 Pillow
+django-db-views
 django-extensions
 ipython
