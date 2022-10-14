@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 ### how to run server
 ```bash
-python manage.py runserver 0.0.0.0:3355
+python manage.py runserver 0.0.0.0:3333
 ```
 
 # docker 세팅
