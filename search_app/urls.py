@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet, SearchResultViewSet
-
+from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet
 # Blog 목록 보여주기
 video_list = VideodataViewSet.as_view({
     'get': 'list',
@@ -29,10 +28,6 @@ searched_list = SearchViewSet.as_view({
     'get' : 'list'
 })
 
-searchResult_list = SearchResultViewSet.as_view({
-    'get' : 'list'
-})
-
 urlpatterns = [
     path("video/", video_list),
     path("bbox/", bbox_data_list),
@@ -40,7 +35,6 @@ urlpatterns = [
     path("label_attr/", label_attr_list),
     path("label_type/", label_type_list),
     path("search/<str:url>/", searched_list),
-    path("search/", searchResult_list),
     path("serialize/", match_filename),
 ]
 

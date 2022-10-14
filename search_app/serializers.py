@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, video_data, search_result
+from .models import bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, video_data
 from .models import bbox_data
 
 class VideoSerializer(serializers.ModelSerializer):
@@ -37,8 +37,3 @@ class SearchSerializer(serializers.Serializer):
     image = serializers.ImageField(use_url=True)
     frame_num = serializers.IntegerField()
     obj_id = serializers.IntegerField()
-
-class SearchResultSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = labels_mainclass_type
-        fields = '__all__'

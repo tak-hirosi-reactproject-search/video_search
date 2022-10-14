@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer, SearchResultSerializer
+from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
 import urllib.parse as uparse
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, search_result
 import pandas as pd
@@ -190,15 +190,10 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     raw_query += ";"
     
     queryset = bbox_data.objects.raw(raw_query)
-    for obj in queryset:
-        print(obj.image)
         
     return queryset
 
 def get_data(data):
-    print("====data====")
-    print(data)
-    print("============")
     video_id_list = []
     top_type_list = []
     top_color_list = []
@@ -272,8 +267,3 @@ class SearchViewSet(viewsets.ModelViewSet):
         data = uparse.parse_qsl(url, keep_blank_values=True)
         queryset = get_data(data)
         return Response(queryset)
-    
-class SearchResultViewSet(viewsets.ModelViewSet):
-    lookup_field = 'obj_id'
-    queryset = search_result.objects.all()
-    serializer_class = SearchResultSerializer

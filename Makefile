@@ -1,6 +1,6 @@
-UID=1014
-USR=tglee
-PORT_NUM=3355
+UID=
+USR=
+PORT_NUM=3333
 VIDEO_TARGET_PATH=/home/samchu/project-meta/
 
 SRC_NAME=videoapi
