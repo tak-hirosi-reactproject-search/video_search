@@ -177,15 +177,15 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
             
     raw_query = ""
-    q1 = 'select * from(' + ' union '.join(string_query_toptype) + ')'
+    q1 = 'select * from(select * from(' + ' union '.join(string_query_toptype) + ')'
     raw_query += q1
-    q2 = 'select * from(' + ' union '.join(string_query_topcolor) + ')'
+    q2 = 'select * from(' + ' union '.join(string_query_topcolor) + '))'
     raw_query += ' intersect ' + q2
     if len(string_query_bottomtype) != 0:
-        q3 = 'select * from(' + ' union '.join(string_query_bottomtype) + ')'
+        q3 = 'select * from(select * from(' + ' union '.join(string_query_bottomtype) + ')'
         raw_query +=' ' + condition + ' ' + q3 
     if len(string_query_bottomcolor) != 0:
-        q4 = 'select * from(' + ' union '.join(string_query_bottomcolor) + ')'
+        q4 = 'select * from(' + ' union '.join(string_query_bottomcolor) + '))'
         raw_query += ' intersect ' + q4    
     raw_query += ";"
     
