@@ -3,7 +3,7 @@ from django.db import connection
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
+from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer, SearchResultSerializer
 import urllib.parse as uparse
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
 import pandas as pd
@@ -194,7 +194,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     with connection.cursor() as cursor:
         cursor.execute(raw_query)
         row = cursor.fetchall()
-
+    
     result_set = []
     for i in range(len(row)):
         temp_dict = {}
@@ -229,7 +229,7 @@ def get_data(data):
             condition.append(data[i][1])
     
     result_set = search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, condition)
-    search_serializer = SearchSerializer(result_set, many = True)
+    search_serializer = SearchResultSerializer(result_set, many = True)
 
     return search_serializer.data
    
@@ -262,10 +262,12 @@ class LabelTypeViewSet(viewsets.ModelViewSet):
 
 class SearchViewSet(viewsets.ModelViewSet):
     queryset = bbox_data.objects.all()
-
     def list(self, request, url):
         data = uparse.parse_qsl(url, keep_blank_values=True)
         queryset = get_data(data)
         return Response(queryset)
 
-
+class SearchResultViewSet(viewsets.ModelViewSet):
+    queryset = bbox_attributes.objects.select_related('bbox','bbox__video', 'attributes').filter().values("bbox_id", "bbox__image", "bbox__video__fps", "bbox__obj_id")
+    serializer_class = SearchResultSerializer
+    

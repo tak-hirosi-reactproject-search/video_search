@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet
+from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet, SearchResultViewSet
 from urllib import parse
 import json
 
@@ -31,6 +31,10 @@ searched_list = SearchViewSet.as_view({
     'get' : 'list'
 })
 
+searchResult_list = SearchResultViewSet.as_view({
+    'get' : 'list'
+})
+
 with open('/videoapi/testdata/test.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
 
@@ -45,6 +49,7 @@ urlpatterns = [
     path("label_attr/", label_attr_list),
     path("label_type/", label_type_list),
     path("search/<str:url>/", searched_list),
+    path("result/", searchResult_list),
     path("serialize/", match_filename),
 ]
 

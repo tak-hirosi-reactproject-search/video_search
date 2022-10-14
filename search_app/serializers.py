@@ -32,9 +32,9 @@ class LabelsMainClassSerializer(serializers.ModelSerializer):
         model = labels_mainclass_type
         fields = '__all__'
     
-class SearchSerializer(serializers.Serializer):
+class SearchSerializer(serializers.ModelSerializer):
     bbox_id = serializers.IntegerField()
-    image = serializers.ImageField()
+    image = serializers.ImageField(use_url=True)
     frame_num = serializers.IntegerField()
     obj_id = serializers.IntegerField()
     
@@ -42,4 +42,9 @@ class SearchSerializer(serializers.Serializer):
         request = self.context.get('request')
         image = search_result.image.url
         return request.build_absolute_uri(image)
+
+class SearchResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = bbox_attributes.objects.select_related('bbox','bbox__video', 'attributes')
+        fields = ["bbox_id", "bbox.image", "bbox__video__fps", "bbox__obj_id"]
         
