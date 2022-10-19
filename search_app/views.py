@@ -162,7 +162,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     
     for i in range(len(video_id_list)):
         for j in range(len(top_type_list)):
-            string_query_toptype.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_toptype.append("select A.id, A.image, A.min, A.obj_id from search_app_video_data inner join (select id, video_id, image, min(frame_num) as min, obj_id from search_app_bbox_data group by obj_id) A on search_app_video_data.id = A.video_id inner join search_app_bbox_attributes on A.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +" where search_app_labels_attributes.name=" 
             + "'" + top_type_list[j] + "'"
             +" and search_app_video_data.id=" 
@@ -170,7 +170,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for k in range(len(top_color_list)):
-            string_query_topcolor.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_topcolor.append("select A.id, A.image, A.min, A.obj_id from search_app_video_data inner join (select id, video_id, image, min(frame_num) as min, obj_id from search_app_bbox_data group by obj_id) A on search_app_video_data.id = A.video_id inner join search_app_bbox_attributes on A.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.name=" 
             + "'" + top_color_list[k] + "'"
             +" and search_app_labels_attributes.type_id=" 
@@ -180,7 +180,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for l in range(len(bottom_type_list)):
-            string_query_bottomtype.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_bottomtype.append("select A.id, A.image, A.min, A.obj_id from search_app_video_data inner join (select id, video_id, image, min(frame_num) as min, obj_id from search_app_bbox_data group by obj_id) A on search_app_video_data.id = A.video_id inner join search_app_bbox_attributes on A.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.name=" 
             + "'" + bottom_type_list[l] + "'"
             +" and search_app_video_data.id=" 
@@ -188,7 +188,7 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
             )
         
         for m in range(len(bottom_color_list)):
-            string_query_bottomcolor.append("select search_app_bbox_data.id, image, frame_num, obj_id from search_app_video_data inner join search_app_bbox_data on search_app_video_data.id = search_app_bbox_data.video_id inner join search_app_bbox_attributes on search_app_bbox_data.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
+            string_query_bottomcolor.append("select A.id, A.image, A.min, A.obj_id from search_app_video_data inner join (select id, video_id, image, min(frame_num) as min, obj_id from search_app_bbox_data group by obj_id) A on search_app_video_data.id = A.video_id inner join search_app_bbox_attributes on A.id = search_app_bbox_attributes.bbox_id inner join search_app_labels_attributes on search_app_bbox_attributes.attributes_id = search_app_labels_attributes.id " 
             +"where search_app_labels_attributes.name=" 
             + "'" + bottom_color_list[m] + "'"
             +" and search_app_labels_attributes.type_id=" 
@@ -262,6 +262,7 @@ class VideodataViewSet(viewsets.ModelViewSet):
     
     def create(self, request):
         if request.method == 'POST':
+            #for i in range(len(request.POST.getlist('size[]'))):
             videoinfo = video_upload(request.data)
             call_inference(videoinfo) 
             return Response('<h1>video serialized</h1>')        
