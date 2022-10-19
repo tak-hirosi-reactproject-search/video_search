@@ -1,9 +1,9 @@
 from django.urls import path
 from .views import VideodataViewSet, BboxdataViewSet, BboxAttributeViewSet, LabelAttributeViewSet, LabelTypeViewSet, match_filename, SearchViewSet
-# Blog 목록 보여주기
+
 video_list = VideodataViewSet.as_view({
-    'get': 'list',
-    #'post' : 'create'
+    'get' : 'list',
+    'post' : 'create'
 })
 
 bbox_data_list = BboxdataViewSet.as_view({

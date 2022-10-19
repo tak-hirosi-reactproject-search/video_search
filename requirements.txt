@@ -12,3 +12,4 @@ Pillow
 django-db-views
 django-extensions
 ipython
+opencv-python

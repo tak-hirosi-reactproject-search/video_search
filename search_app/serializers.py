@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, video_data
-from .models import bbox_data
+from .models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:

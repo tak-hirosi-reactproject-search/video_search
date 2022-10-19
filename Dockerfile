@@ -4,9 +4,9 @@ SHELL ["/bin/bash", "-c"]
 
 # Setup user account
 # id -g, id -u
-ARG uid
-ARG gid
-ARG usr
+# ARG uid
+# ARG gid
+# ARG usr
 ARG fname
 ARG portnum
 ARG datapath

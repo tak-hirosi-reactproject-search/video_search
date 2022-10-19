@@ -1,18 +1,19 @@
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
 import urllib.parse as uparse
 from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, search_result
 import pandas as pd
 import os
-
+from django.shortcuts import redirect
+import cv2
+from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.conf import settings
-from django.conf.urls.static import static
+from django.core.files.storage import FileSystemStorage
 
-def set_bbox(filepath, video_id):
-    df = pd.read_csv(filepath)
+def set_bbox(csv_path, video_id):
+    df = pd.read_csv(csv_path)
     data_df = df.values.tolist()
 
     label_mainclass_id = list(labels_mainclass_type.objects.values('id'))[0]["id"]
@@ -90,28 +91,47 @@ def set_bbox(filepath, video_id):
             bbox_attribute_instance.save()
             
 
-def set_video_data(filepath):
-    src_path = '/videometadata/csvfiles'
-
-    df = pd.read_csv(filepath)
-    data_df = df.values.tolist()
-    filename = data_df[0][2].split('/')
-    video_instance = video_data(src_path = src_path, name = filename[0], fps = data_df[0][0], last_frame = data_df[0][1])
-    video_instance.save()            
+def set_video_data(videoinfo):
+    video_instance = video_data(video = videoinfo[0], fps = videoinfo[1], last_frame = videoinfo[2])
+    video_instance.save() 
     video_id = list(video_data.objects.all().values('id'))[0]["id"]
     video_obj = video_data.objects.get(id = video_id)
 
     return video_obj
 
-def call_serializer(filepath):
-    video_id = set_video_data(filepath)
-    set_bbox(filepath, video_id)
 
-def match_filename(self):
-    filecount = video_data.objects.values("name").count()
+def video_upload(videodata):
+    videoinfo = []
+    video = TemporaryUploadedFile.temporary_file_path(videodata["video"])
+    cap = cv2.VideoCapture(video)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    last_frame = cap.get(cv2.CAP_PROP_FRAME_COUNT)    
+    videoinfo.append(videodata["video"])
+    videoinfo.append(fps)
+    videoinfo.append(last_frame)
+    videoinfo.append(video)
+    return videoinfo
+
+
+def call_inference(videoinfo):
+    src_path = '/videometadata' + videoinfo[3]
+    
+    #detection-classification inference 실행
+    #inference(src_path)
+    csv_path = '/videometadata/csvfiles'
+    if csv_path != None:
+        match_filename(videoinfo, csv_path)
+    
+def call_serializer(videoinfo, csv_path):
+    video_id = set_video_data(videoinfo)
+    set_bbox(csv_path, video_id)
+
+
+def match_filename(videoinfo, csvpath):
+    filecount = video_data.objects.values("video").count()
     filelist = []
     for j in range(filecount):
-        filelist.append(list(video_data.objects.all().values('name'))[j]["name"])
+        filelist.append(list(video_data.objects.all().values('video'))[j]["video"])
         
     dir_file = []
     dir_path = '/videometadata/csvfiles' 
@@ -126,10 +146,11 @@ def match_filename(self):
     if count != filecount:
         for i in range(len(dir_file)):
             if dir_file[i] not in filelist:
-                call_serializer(dir_path + '/' + dir_file[i] + extension)
+                call_serializer(videoinfo, dir_path + '/' + dir_file[i] + extension)
         return HttpResponse('<h1> Serialized </h1>')
     else:
         return HttpResponse('<h1> serialize할 파일이름 없음 </h1>')
+        
 
 def search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, con):
         
@@ -187,10 +208,9 @@ def search(video_id_list, top_type_list, top_color_list, bottom_type_list, botto
     if len(string_query_bottomcolor) != 0:
         q4 = 'select * from(' + ' union '.join(string_query_bottomcolor) + '))'
         raw_query += ' intersect ' + q4    
-    raw_query += ";"
-    
-    queryset = bbox_data.objects.raw(raw_query)
-        
+    raw_query += ";"   
+     
+    queryset = bbox_data.objects.raw(raw_query)       
     return queryset
 
 def get_data(data):
@@ -235,12 +255,17 @@ def get_data(data):
     return search_serializer.data
    
 
-# Blog의 목록, detail 보여주기, 수정하기, 삭제하기 모두 가능
+#Blog의 목록, detail 보여주기, 수정하기, 삭제하기 모두 가능
 class VideodataViewSet(viewsets.ModelViewSet):
-    lookup_field = 'id'
     queryset = video_data.objects.all()
     serializer_class = VideoSerializer
-
+    
+    def create(self, request):
+        if request.method == 'POST':
+            videoinfo = video_upload(request.data)
+            call_inference(videoinfo) 
+            return Response('<h1>video serialized</h1>')        
+    
 class BboxdataViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
     queryset = bbox_data.objects.all()

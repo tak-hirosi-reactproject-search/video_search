@@ -1,15 +1,16 @@
 from django.db import models
 from django_db_views.db_view import DBView
 from django.db.models import CASCADE, Model
+from django.core.validators import FileExtensionValidator
 
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 class video_data(Model):
-    src_path = models.FilePathField(max_length=200, path=BASE_DIR, verbose_name="SOURCE PATH", null=True)
-    name = models.CharField(max_length=100, verbose_name="NAME")
-    
+    video = models.FileField(upload_to='videos/', null=True, validators=[FileExtensionValidator(allowed_extensions=['mp4'])])
+    # src_path = models.FilePathField(max_length=200, path=BASE_DIR, verbose_name="SOURCE PATH", null=True)
+    # name = models.CharField(max_length=100, verbose_name="NAME")
     fps = models.FloatField(verbose_name="FPS", null=True)
     last_frame = models.FloatField(verbose_name="Last Frame", null=True)
 
@@ -42,11 +43,11 @@ class labels_attributes(Model):
         ]
  
 class bbox_data(Model):
-    video = models.ForeignKey(to="video_data", on_delete=CASCADE, verbose_name="Type")
-    frame_num = models.PositiveBigIntegerField(verbose_name="Frame")
-    obj_id = models.PositiveSmallIntegerField(verbose_name="Object ID")
+    video = models.ForeignKey(to="video_data", on_delete=CASCADE, verbose_name="Type", null=True)
+    frame_num = models.PositiveBigIntegerField(verbose_name="Frame", null=True)
+    obj_id = models.PositiveSmallIntegerField(verbose_name="Object ID", null=True)
     image = models.ImageField(blank=True, null=True, upload_to="images/", verbose_name="Image")
-    mainclass = models.ForeignKey(to="labels_mainclass_type", on_delete=CASCADE, verbose_name="Mainclass")
+    mainclass = models.ForeignKey(to="labels_mainclass_type", on_delete=CASCADE, verbose_name="Mainclass", null=True)
     
     class Meta:
         constraints = [
@@ -57,8 +58,8 @@ class bbox_data(Model):
         ]    
 
 class bbox_attributes(Model):
-    bbox = models.ForeignKey(to="bbox_data", on_delete=CASCADE, verbose_name="BBOX ID")
-    attributes = models.ForeignKey(to="labels_attributes", on_delete=CASCADE, verbose_name="Attributes")
+    bbox = models.ForeignKey(to="bbox_data", on_delete=CASCADE, verbose_name="BBOX ID", null=True)
+    attributes = models.ForeignKey(to="labels_attributes", on_delete=CASCADE, verbose_name="Attributes", null=True)
     
     class Meta:
         constraints = [
@@ -67,7 +68,6 @@ class bbox_attributes(Model):
                 name = "unique box attributes"
             )
         ]  
-
 
 
 class search_result(DBView):

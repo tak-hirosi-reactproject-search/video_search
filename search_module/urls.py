@@ -15,8 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from search_app.views import set_video_data
-from search_app import urls
 
 urlpatterns = [
     
