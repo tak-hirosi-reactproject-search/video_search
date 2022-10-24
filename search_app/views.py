@@ -1,5 +1,5 @@
 from tempfile import TemporaryFile
-from cv2 import VideoCapture
+import cv2
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -102,24 +102,21 @@ def set_video_data(videoinfo):
 
     return video_obj
 
-
+#DB(video_data) field에 맞는 value 생성, DB 최신화
 def call_inference(videoname):
-    #DB(video_data) field에 맞는 value 생성
     videoinfo = []
     src_path = '/videometadata/videos/' + videoname
-    name = videoname
-    #cap = cv2.VideoCapture(src_path)
-    #fps = cap.get(cv2.CAP_PROP_FPS)
-    #last_frame = cap.get(cv2.CAP_PROP_FRAME_COUNT) 
-    #videoinfo.append(src_path, name, fps, last_frame)
-    return src_path
-    
-    #detection-classification inference 실행
-    #inference(src_path)
+    cap = cv2.VideoCapture(src_path)
+    fps = cap.get(cv2.CAP_PROP_FPS) 
+    last_frame = cap.get(cv2.CAP_PROP_FRAME_COUNT) 
+    videoinfo.append(src_path)
+    videoinfo.append(videoname)
+    videoinfo.append(fps)
+    videoinfo.append(last_frame)
+    #inference(src_path) #detection-classification inference 실행
     csv_path = '/videometadata/csvfiles'
-    
-    #DB 최신화 코드(DB-비디오파일 매칭)    
-    match_filename(videoname, csv_path, videoinfo)
+    status = match_filename(videoname, csv_path, videoinfo) #DB 최신화 코드(DB-비디오파일 매칭)
+    return status
 
     
 def call_serializer(videoinfo, csv_path):
@@ -128,10 +125,10 @@ def call_serializer(videoinfo, csv_path):
 
 
 def match_filename(videoname, csvpath, videoinfo):
-    filecount = video_data.objects.values("video").count()
+    filecount = video_data.objects.values('name').count()
     filelist = []
     for j in range(filecount):
-        filelist.append(list(video_data.objects.all().values('video'))[j]["video"])
+        filelist.append(list(video_data.objects.all().values('name'))[j]['name'])
         
     dir_file = []
     dir_path = '/videometadata/csvfiles' 
@@ -147,9 +144,9 @@ def match_filename(videoname, csvpath, videoinfo):
         for i in range(len(dir_file)):
             if dir_file[i] not in filelist:
                 call_serializer(videoinfo, dir_path + '/' + dir_file[i] + extension) #inference로 받은 csv DB 반영
-        return HttpResponse('<h1> Serialized </h1>')
+        return 'Inference 완료'
     else:
-        return HttpResponse('<h1> serialize할 파일이름 없음 </h1>')
+        return 'Inference & Update 완료'
         
 
 def search(video_id_list, top_type_list, top_color_list, bottom_type_list, bottom_color_list, con):
@@ -263,17 +260,25 @@ class VideodataViewSet(viewsets.ModelViewSet):
     
     def create(self, request):
         if request.method == 'POST':
-            
+            count = 0
             #videos/ 경로에 mp4 파일 업로드
-            video = ContentFile(request.data["video"], name=request.data["name"])  
-            temp = uploaded_data(file = video)
-            temp.save()
-            videoname = request.data["name"]
-            
-            #detection-classification inference 코드와 연결
-            name = call_inference(videoname)
-        
-        return Response(name)
+            request_name = str(request.data["name"])
+            for (root, directories, files) in os.walk('/videometadata/videos/'):
+                for file in files:
+                    file_name, extension = os.path.splitext(file)
+                    if file_name + '.mp4' == request_name:
+                        count += 1                   
+            if count == 0:
+                content = str(request.data["video"])
+                b64list = content.split(';base64,')
+                video = ContentFile(b64decode(b64list[1]), name=request.data["name"])  
+                temp = uploaded_data(file = video)
+                temp.save()
+                status = call_inference(request_name) #detection-classification inference 코드와 연결
+                return Response(status)
+            else:
+                return Response("동일한 이름의 파일이 존재합니다")
+                
 
     
 class BboxdataViewSet(viewsets.ModelViewSet):

@@ -71,7 +71,6 @@ class bbox_attributes(Model):
             )
         ]  
 
-
 class search_result(DBView):
     bbox = models.ForeignKey(to="bbox_data", on_delete=models.DO_NOTHING, verbose_name="BBOX ID")
     obj_id = models.PositiveSmallIntegerField(verbose_name="Object ID")
