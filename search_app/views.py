@@ -1,16 +1,19 @@
+from tempfile import TemporaryFile
+from cv2 import VideoCapture
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .serializers import LabelsAttributeSerializer,LabelsTypeSerializer, VideoSerializer, BboxSerializer, BboxAttributeSerializer, SearchSerializer
 import urllib.parse as uparse
-from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, search_result
+from search_app.models import video_data, bbox_data, bbox_attributes, labels_attributes, labels_attributes_type, labels_mainclass_type, uploaded_data
 import pandas as pd
 import os
 from django.shortcuts import redirect
 import cv2
-from django.core.files.uploadedfile import TemporaryUploadedFile
+from django.core.files.base import ContentFile
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from base64 import b64decode, encode
+from django.core.files.uploadedfile import TemporaryUploadedFile
 
 def set_bbox(csv_path, video_id):
     df = pd.read_csv(csv_path)
@@ -92,7 +95,7 @@ def set_bbox(csv_path, video_id):
             
 
 def set_video_data(videoinfo):
-    video_instance = video_data(video = videoinfo[0], fps = videoinfo[1], last_frame = videoinfo[2])
+    video_instance = video_data(src_path = videoinfo[0],name = videoinfo[1], fps = videoinfo[2], last_frame = videoinfo[3])
     video_instance.save() 
     video_id = list(video_data.objects.all().values('id'))[0]["id"]
     video_obj = video_data.objects.get(id = video_id)
@@ -100,34 +103,31 @@ def set_video_data(videoinfo):
     return video_obj
 
 
-def video_upload(videodata):
+def call_inference(videoname):
+    #DB(video_data) field에 맞는 value 생성
     videoinfo = []
-    video = TemporaryUploadedFile.temporary_file_path(videodata["video"])
-    cap = cv2.VideoCapture(video)
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    last_frame = cap.get(cv2.CAP_PROP_FRAME_COUNT)    
-    videoinfo.append(videodata["video"])
-    videoinfo.append(fps)
-    videoinfo.append(last_frame)
-    videoinfo.append(video)
-    return videoinfo
-
-
-def call_inference(videoinfo):
-    src_path = '/videometadata' + videoinfo[3]
+    src_path = '/videometadata/videos/' + videoname
+    name = videoname
+    #cap = cv2.VideoCapture(src_path)
+    #fps = cap.get(cv2.CAP_PROP_FPS)
+    #last_frame = cap.get(cv2.CAP_PROP_FRAME_COUNT) 
+    #videoinfo.append(src_path, name, fps, last_frame)
+    return src_path
     
     #detection-classification inference 실행
     #inference(src_path)
     csv_path = '/videometadata/csvfiles'
-    if csv_path != None:
-        match_filename(videoinfo, csv_path)
+    
+    #DB 최신화 코드(DB-비디오파일 매칭)    
+    match_filename(videoname, csv_path, videoinfo)
+
     
 def call_serializer(videoinfo, csv_path):
     video_id = set_video_data(videoinfo)
     set_bbox(csv_path, video_id)
 
 
-def match_filename(videoinfo, csvpath):
+def match_filename(videoname, csvpath, videoinfo):
     filecount = video_data.objects.values("video").count()
     filelist = []
     for j in range(filecount):
@@ -146,7 +146,7 @@ def match_filename(videoinfo, csvpath):
     if count != filecount:
         for i in range(len(dir_file)):
             if dir_file[i] not in filelist:
-                call_serializer(videoinfo, dir_path + '/' + dir_file[i] + extension)
+                call_serializer(videoinfo, dir_path + '/' + dir_file[i] + extension) #inference로 받은 csv DB 반영
         return HttpResponse('<h1> Serialized </h1>')
     else:
         return HttpResponse('<h1> serialize할 파일이름 없음 </h1>')
@@ -257,15 +257,24 @@ def get_data(data):
 
 #Blog의 목록, detail 보여주기, 수정하기, 삭제하기 모두 가능
 class VideodataViewSet(viewsets.ModelViewSet):
+    lookup_field ='id'
     queryset = video_data.objects.all()
     serializer_class = VideoSerializer
     
     def create(self, request):
         if request.method == 'POST':
-            #for i in range(len(request.POST.getlist('size[]'))):
-            videoinfo = video_upload(request.data)
-            call_inference(videoinfo) 
-            return Response('<h1>video serialized</h1>')        
+            
+            #videos/ 경로에 mp4 파일 업로드
+            video = ContentFile(request.data["video"], name=request.data["name"])  
+            temp = uploaded_data(file = video)
+            temp.save()
+            videoname = request.data["name"]
+            
+            #detection-classification inference 코드와 연결
+            name = call_inference(videoname)
+        
+        return Response(name)
+
     
 class BboxdataViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'

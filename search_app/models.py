@@ -7,10 +7,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+class uploaded_data(Model):
+    file =  models.FileField(upload_to='videos/', null=True, validators=[FileExtensionValidator(allowed_extensions=['mp4'])])
+
 class video_data(Model):
-    video = models.FileField(upload_to='videos/', null=True, validators=[FileExtensionValidator(allowed_extensions=['mp4'])])
-    # src_path = models.FilePathField(max_length=200, path=BASE_DIR, verbose_name="SOURCE PATH", null=True)
-    # name = models.CharField(max_length=100, verbose_name="NAME")
+    src_path = models.FilePathField(max_length=200, path=BASE_DIR, verbose_name="SOURCE PATH", null=True)
+    name = models.CharField(max_length=100, verbose_name="NAME")
     fps = models.FloatField(verbose_name="FPS", null=True)
     last_frame = models.FloatField(verbose_name="Last Frame", null=True)
 
@@ -76,20 +78,4 @@ class search_result(DBView):
     image = models.ImageField(blank=True, null=True, upload_to="images/", verbose_name="Image")
     fps = models.FloatField(verbose_name="FPS", null=True)
     last_frame = models.FloatField(verbose_name="Last Frame", null=True)
-    
-    view_defintion="""
-        SELECT
-            "search_app_bbox_attributes"."bbox_id" as bbox_id,
-            "search_app_bbox_data"."image" as image,	
-            "search_app_video_data"."fps" as fps,
-            "search_app_bbox_data"."obj_id" as last_frame
-        FROM "search_app_bbox_attributes"
-        INNER JOIN "search_app_bbox_data"
-            ON ("search_app_bbox_attributes"."bbox_id" = "search_app_bbox_data"."id")
-        INNER JOIN "search_app_video_data"
-            ON ("search_app_bbox_data"."video_id" = "search_app_video_data"."id")
-    """
-    
-    class Meta:
-        managed = False
-        db_table = "search_result"
+
